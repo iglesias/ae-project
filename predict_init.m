@@ -1,4 +1,4 @@
-% function [mu_bar, sigma_bar] = predict(mu, sigma, u, R)
+% function [mu_bar, sigma_bar] = predict_init(mu, sigma, u, R)
 % This function performs the prediction step when there is no previous shared
 % measurements between the robots.
 % Inputs:
@@ -9,7 +9,7 @@
 % Outputs:   
 %           mu_bar(t)         3X1
 %           sigma_bar(t)      3X3
-function [mu_bar, sigma_bar] = predict(mu, sigma, u, R)
+function [mu_bar, sigma_bar] = predict_init(mu, sigma, u, R)
 
 g = mu+u;   % Linearization
 G = [
