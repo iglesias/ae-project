@@ -1,0 +1,14 @@
+# Goto (10,0) with 0.5m tolerance
+1 10 0 0.5
+
+# Goto (10,10) with 2m tolerance which means will move at full speed til end
+1 10 10 2
+
+# Jump to (0,0,0)
+3 0 0 0 
+
+# Goto (0,10) with 0.5m tolerance
+1 0 10 0.5
+
+# Goto (10,10) with 0.1m tolerance
+1 10 10 0.1

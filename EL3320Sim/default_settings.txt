@@ -1,0 +1,111 @@
+# This file specifies the experimental setup
+# 
+# It should probably have been an XML file now it is just text so be careful 
+# so that you do not change the names or change the number of parameters
+#
+# You need to keep the arguments on the same line as the keyword
+# 
+
+OUTFILENAME simoutput.txt
+MAPFILENAME map.txt
+TRAJFILENAME traj.txt
+
+# Set this to non-zero if you want to have the landmark ID for each
+# measurement corresponding to the ID of the measured landmark
+KNOWN_ASSOCIATIONS 1
+
+# Set this to non-zero if you want the output file to contain the true pose
+OUTPUT_TRUEPOSE 1
+
+# The timestep between each iteration in the simulation [s]
+SIM_MEAS_TIMESTEP 0.2
+
+# The initial robot pose (x,y,theta) in the simulation in the world
+# frame (same as map coordinates). xy, in m and theta in radians
+INITIAL_ROBOTPOSE 0 0 0
+
+################ MOTION MODEL ######################
+# Robot wheel setup (true) in meters
+WHEEL_RADIUS_R_TRUE 0.1
+WHEEL_RADIUS_L_TRUE 0.1
+WHEEL_BASE_TRUE 0.35
+
+# Robot wheel setup (model used to calculate the odometry) in meters
+WHEEL_RADIUS_R_MODEL 0.1
+WHEEL_RADIUS_L_MODEL 0.1
+WHEEL_BASE_MODEL 0.35
+
+# Use this parameter to specify that you want to use the true
+# wheel parameters when you calculate the wheel speeds based on
+# the translation and rotation speeds in the low level robot
+# speed controller. This allows you to decouple the true and
+# modeled wheel parameters completely. This also makes it easier
+# to make the robot drive exactly as you command it to.
+# Set 0 not to use true parameters, anything else will result in true used
+USE_TRUE_WHEEL_PARAMS_FOR_WHEEL_SPEEDS 0
+
+# Number of encoder ticks per revolution of the wheel (integer!!!)
+ENCODER_TICK_PER_REV 2048
+
+# Max magnitude for speed (translation V (m/s) and rotation W (rad/s))
+ROBOT_MAX_SPEED_V  1
+ROBOT_MAX_SPEED_W  0.5
+
+# Max magnitude for the accelaration (trans V (m/s/s) and rot W(rad/s/s))
+ROBOT_MAX_ACC_V 0.5
+ROBOT_MAX_ACC_W 0.5
+
+# The acceleration noise added to the robot accelation
+ROBOT_ACC_NOISESTD_MULT_V 0
+ROBOT_ACC_NOISESTD_MULT_W 0
+
+# Multiplicative noise for the robot acceleration
+ROBOT_ACC_NOISESTD_ADD_V 0
+ROBOT_ACC_NOISESTD_ADD_W 0
+
+# The max speeds used by the motion controller. Note that putting
+# these values larger than the ROBOT_MAX_SPEED_? will not increase the
+# speed
+CTRL_MAX_SPEED_V 0.5
+CTRL_MAX_SPEED_W 0.5
+
+# This is the gain for the P-controller for the rotation speed
+CTRL_GAIN_ROT   1.0
+
+# This is the gain for the P-controller for the translation speed
+CTRL_GAIN_TRANS 1.0
+
+# This factor tells how much the translation speed should be reduced
+# by an error in the desired heading angle. The angle is used in a
+# factor exp(-0.5*(angErr/angFactor)^2) which means that the factor is
+# an angle [rad] and the larger the angle the smaller the coupling
+# between angle errror and speed reduction will be
+CTRL_SPEEDRED_ANGFACTOR 0.35
+
+################## SENSOR MODEL #######################
+
+# Sensor pose (x,y,theta) in the robot frame. x,y in m and theta in radians
+SENSOR_POSE 0 0 0
+
+# The additive sensor noise (rad and m)
+SENSOR_NOISESTD_BEARING 0.01
+SENSOR_NOISESTD_RANGE   0.01
+
+# The bias on the sensor signals (rad and m)
+SENSOR_BIAS_BEARING     0
+SENSOR_BIAS_RANGE       0
+
+# The field of view of the sensor angle (rad and m)
+SENSOR_ANG_FOV          6.3
+SENSOR_MAX_RANGE        10
+
+######################## LANDMARK MODEL #########################
+
+# To calculate occlusion we use the diameter of the landmark [m]
+# Note that the landmark diameter does not affect the range measurement of the
+# landmark unless the flag below is set
+LANDMARK_DIAMETER       0.1
+
+# Set this flag to something not 0 if you want the range measurements
+# to be reduced with the radius of the landmarks
+REDUCE_RANGE_MEAS_BY_LANDMARK_RADIUS 0

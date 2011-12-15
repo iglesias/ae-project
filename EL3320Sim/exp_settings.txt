@@ -1,0 +1,12 @@
+# This file specifies the experimental setup
+# 
+# It should probably have been an XML file now it is just text so be careful 
+# so that you do not change the names or change the number of parameters
+#
+# You need to keep the arguments on the same line as the keyword
+# 
+
+OUTFILENAME simoutput2.txt
+TRAJFILENAME traj2.txt
+WHEEL_RADIUS_R_TRUE 0.101
+
