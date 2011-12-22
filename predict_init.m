@@ -9,17 +9,17 @@
 % Outputs:   
 %           mu_bar(t)         3X1
 %           sigma_bar(t)      3X3
-function [mu_bar, sigma_bar] = predict_init(mu, sigma, u, R)
+function [mu_bar, sigma_bar] = predict_init(mu, sigma, u, Q)
 
-g = mu+u;   % Linearization
+g = mu + u;   % Linearization
 G = [
         1   0   -u(2);
         0   1    u(1);
         0   0       1
-    ];      % Jacobian of g
+    ];        % Jacobian of g
 
 % Prediction step
-mu_bar = g;
-sigma_bar = G*sigma*G' + R;
+mu_bar    = g;
+sigma_bar = G*sigma*G' + Q;
 
 end
