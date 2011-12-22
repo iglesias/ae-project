@@ -2,4 +2,7 @@ About the notation:
 
 - Q is the covariance for the noise in the motion model (like they use it in the
 paper, contrary to the book).
-- R is the covariance for the nosie in the measurement model.
+- Rfeat is the covariance for the noise in the measurement model of the
+features (when a robot measures a feature, as in lab1 and lab2).
+- Rrobo is the covariance for the noise in the measurement model of the robots
+(when a robot sees another robot).
