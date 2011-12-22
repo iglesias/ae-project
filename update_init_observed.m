@@ -52,9 +52,9 @@ observed.mu = (eye(3) - observed.sigma_bar*S_tinv)*observed.mu_bar + ...
 
 % Update the uncertainty in the belief
 observed.sigma = observed.sigma_bar - ...
-                 observed.sigma_bar*S_tinv*observed.sigma_bar;
+                 observed.sigma_bar * S_tinv * observed.sigma_bar;
 
 % Introduce the cross correlation term
-observed.cross = observed.sigma_bar*S_tinv*H_tilde*observer.sigma_bar;
+observed.cross = observed.sigma_bar * S_tinv * H_tilde * observer.sigma_bar;
 
 end
