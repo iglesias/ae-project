@@ -1,0 +1,14 @@
+About the notation:
+
+- Q is the covariance for the noise in the motion model (like they use it in the
+paper, contrary to the book).
+- Rfeat is the covariance for the noise in the measurement model of the
+features (when a robot measures a feature, as in lab1 and lab2).
+- Rrobo is the covariance for the noise in the measurement model of the robots
+(when a robot sees another robot).
+
+Thoughts for the report:
+
+- The update steps of the Kalman filter have been separated in observed and
+observed (the robot saw another robot or was seen by another robot) so the
+simulation represents better a real decentralized system.
