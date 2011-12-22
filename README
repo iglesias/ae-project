@@ -1,0 +1,5 @@
+About the notation:
+
+- Q is the covariance for the noise in the motion model (like they use it in the
+paper, contrary to the book).
+- R is the covariance for the nosie in the measurement model.
