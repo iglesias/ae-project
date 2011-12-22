@@ -54,4 +54,7 @@ observed.mu = (eye(3) - observed.sigma_bar*S_tinv)*observed.mu_bar + ...
 observed.sigma = observed.sigma_bar - ...
                  observed.sigma_bar*S_tinv*observed.sigma_bar;
 
+% Introduce the cross correlation term
+observed.cross = observed.sigma_bar*S_tinv*H_tilde*observer.sigma_bar;
+
 end
