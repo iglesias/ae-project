@@ -12,7 +12,7 @@
 % Outputs:
 %           observer(t):    robot structure
 %
-function observer = update_init_observed(observed, observer, Rrobo, z)
+function observer = update_init_observer(observed, observer, Rrobo, z)
 
 % Compute H_tilde
 
