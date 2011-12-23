@@ -1,3 +1,4 @@
+% function observed = update_init_observed(observed, observer, Rrobo, z)
 % Performs the first update step for a robot. This robot has played the 
 % role of observed in the measurement.
 %
