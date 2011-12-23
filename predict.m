@@ -38,6 +38,8 @@ if lastUpdate
       disp('Problem with the robot index!')
   end
 
+  lastUpdate = false;
+
 else
   robot.P_ita = G*robot.P_ita;
 end
