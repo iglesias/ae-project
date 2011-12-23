@@ -1,4 +1,4 @@
-% function observer = update_observed(observed, observer, Rrobo, z)
+% function observer = update_observer(observed, observer, Rrobo, z)
 % Performs the update step for a robot. This robot has played the role of
 % observer in the measurement. The update step is any that is not the first one.
 %
@@ -12,7 +12,7 @@
 % Outputs:
 %           observer(t):    robot structure
 %
-function observer = update_init_observed(observer, Rrobo, z)
+function observer = update_observer(observed, observer, Rrobo, z)
 
 % Compute H_tilde
 
