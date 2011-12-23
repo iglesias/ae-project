@@ -5,8 +5,8 @@
 % Inputs:
 %           observed(t):    robot structure
 %           observer(t):    robot structure
-%           Rrobo      :    3x3, covariance of the measurement noise (between
-%                           robots)
+%           Rrobo      :    3x3, covariance of the measurement noise 
+%                           (between robots)
 %           z(t)       :    3x1, measurement
 %
 % Outputs:
@@ -44,7 +44,8 @@ Gamma = [
 R_tilde = Gamma*Rrobo*Gamma';
 
 % Compute S_tilde using H_tilde and R_tilde
-S_tilde = H_tilde*observer.sigma_bar*H_tilde' + observed_sigma_bar + R_tilde;
+S_tilde = H_tilde*observer.sigma_bar*H_tilde' + observed_sigma_bar + ...
+          R_tilde;
 S_tinv  = S_tilde\eye(3);
 
 % Update the mean of the belief
@@ -57,5 +58,7 @@ observed.sigma = observed.sigma_bar - ...
 
 % Introduce the cross correlation term
 observed.cross = observed.sigma_bar * S_tinv * H_tilde * observer.sigma_bar;
+
+observed.lastUpdate = true;
 
 end

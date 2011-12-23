@@ -1,12 +1,13 @@
 % function observer = update_observer(observed, observer, Rrobo, z)
 % Performs the update step for a robot. This robot has played the role of
-% observer in the measurement. The update step is any that is not the first one.
+% observer in the measurement. The update step is any that is not the first
+% one.
 %
 % Inputs:
 %           observed(t):    robot structure
 %           observer(t):    robot structure
-%           Rrobo      :    3x3, covariance of the measurement noise (between
-%                           robots)
+%           Rrobo      :    3x3, covariance of the measurement noise 
+%                           (between robots)
 %           z(t)       :    3x1, measurement
 %
 % Outputs:
@@ -68,4 +69,8 @@ observer.cross =  observer.cross_bar - ...
                   ( observer.cross_bar - observer.sigma_bar*H_tilda' )* ...
                   S_tinv* ...
                   ( observed.sigma_bar - H_tilda*observer.cross_bar );
+              
+observer.lastUpdate = true;
+
+end
   

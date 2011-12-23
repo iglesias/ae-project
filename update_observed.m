@@ -1,12 +1,13 @@
 % function observed = update_observed(observed, observer, Rrobo, z)
 % Performs the update step for a robot. This robot has played the role of
-% observed in the measurement. The update step is any that is not the first one.
+% observed in the measurement. The update step is any that is not the first
+% one.
 %
 % Inputs:
 %           observed(t):    robot structure
 %           observer(t):    robot structure
-%           Rrobo      :    3x3, covariance of the measurement noise (between
-%                           robots)
+%           Rrobo      :    3x3, covariance of the measurement noise 
+%                           (between robots)
 %           z(t)       :    3x1, measurement
 %
 % Outputs:
@@ -66,8 +67,9 @@ observed.sigma = observed.sigma_bar - ...
 % Update the cross correlation term
 
 % This is first computed with the expression for the observer and later
-% transposed. A new variable cross_observer is introduced because this function
-% does not update anything for the observer, it just processes its information
+% transposed. A new variable cross_observer is introduced because this 
+% function does not update anything for the observer, it just processes its
+% information
 
 cross_observer = observer.cross_bar - ...
                  ( observer.cross_bar - observer.sigma_bar*H_tilda' )* ...
@@ -75,5 +77,7 @@ cross_observer = observer.cross_bar - ...
                  ( observed.sigma_bar - H_tilda*observer.cross_bar );
 
 observed.cross = cross_observer';
+
+observed.lastUpdate = true;
 
 end
