@@ -4,11 +4,9 @@
 % Inputs:
 %           robot(t):         robot structure   
 %           Q:                3X3
-%           lastUpdate(t):    boolean, indicates whether this is the first prediction
-%                             after an update step or not
 % Outputs:   
 %           robot(t):         robot structure
-function robot = predict(robot, Q, lastUpdate)
+function robot = predict(robot, Q)
 
 g = robot.mu + robot.u;   % Linearization
 G = [
@@ -24,8 +22,11 @@ robot.sigma_bar = G*robot.sigma*G' + Q;
 % Compute or refresh the temporal terms required to predict the cross
 % correlation terms in the next update
 
-if lastUpdate
-  
+% In the robot structure, lastUpdate indicates whether this is the first
+% prediction after an update step or not
+
+if robot.lastUpdate
+
   % TODO generalize this for the case when there are more than two robots
   switch robot.index
     case 1
@@ -38,7 +39,7 @@ if lastUpdate
       disp('Problem with the robot index!')
   end
 
-  lastUpdate = false;
+  robot.lastUpdate = false;
 
 else
   robot.P_ita = G*robot.P_ita;
