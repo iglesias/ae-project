@@ -26,13 +26,13 @@ robot.sigma_bar = G*robot.sigma*G' + Q;
 
 if lastUpdate
   
-  [U, W, V] = svd( robot.cross );
-
   % TODO generalize this for the case when there are more than two robots
   switch robot.index
     case 1
+      [U, W, ~] = svd( robot.cross );
       robot.P_ita = U*W;
     case 2
+      [~, ~, V] = svd( robot.cross' );
       robot.P_ita = V;    
     otherwise
       disp('Problem with the robot index!')
