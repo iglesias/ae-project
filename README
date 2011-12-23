@@ -12,3 +12,10 @@ Thoughts for the report:
 - The update steps of the Kalman filter have been separated in observed and
 observed (the robot saw another robot or was seen by another robot) so the
 simulation represents better a real decentralized system.
+
+TODO
+
+- The non-initial update step for the robots that have not participated in the
+measurement.
+
+- Make in separate functions the computation of H_tilde, R_tilde
