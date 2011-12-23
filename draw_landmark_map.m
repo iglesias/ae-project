@@ -1,6 +1,6 @@
 % This function displays the map landmark as black circles
 %
-function drawLandmarkMap(filename)
+function draw_landmark_map(filename)
 
 d = load(filename);
 
