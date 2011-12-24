@@ -109,14 +109,14 @@ while i < min( length(flines1), length(fline2) )
   line    = flines1{i};
   values  = sscanf(line, '%f');
 
-  pt          = t;
-  t           = values(1);
-  delta_t     = t - pt;
-  odom        = values(2:4);
-  penc        = enc;
-  enc         = values(5:6);
-  denc        = enc - penc;
-  truepose    = values(7:9);
+  pt1          = t;
+  t1           = values(1);
+  delta_t1     = t - pt;
+  odom1        = values(2:4);
+  penc1        = enc;
+  enc1         = values(5:6);
+  denc1        = enc - penc;
+  truepose1    = values(7:9);
 
   n = values(10);
   if (n > 0)
@@ -129,26 +129,41 @@ while i < min( length(flines1), length(fline2) )
     ids      = [];
   end
 
-  % TODO adapt this to the robot structure
-  robot1.u = calculate_odometry(denc(1), denc(2), E_T, B, R_R, R_L, delta_t, ...
+  % Read robot2's data
+
+  line    = flines2{i};
+  values  = sscanf(line, '%f');
+
+  pt2          = t;
+  t2           = values(1);
+  delta_t2     = t - pt;
+  odom2        = values(2:4);
+  penc2        = enc;
+  enc2         = values(5:6);
+  denc2        = enc - penc;
+  truepose2    = values(7:9);
+
+  % Compute the control signals of the robots
+
+  robot1.u = calculate_odometry(denc1(1), denc1(2), E_T, B, R_R, R_L, delta_t1, ...
                                 robot1.mu);
+  robot2.u = calculate_odometry(denc2(1), denc2(2), E_T, B, R_R, R_L, delta_t2, ...
+                                robot2.mu);
 
   z = [ranges'; bearings'];
   known_associations = ids';
 
-  %TODO adapt this to the robot structure
-  [robot1, outliers] = ekf_localize(robot1, sigma, R, Q, z, ...
-                                    known_associations, M, ... 
-                                    LAMBDA_M, map_ids, i);
-  total_outliers = total_outliers + outliers;
+  [robot1, outliers]  = ekf_localize( robot1, sigma, R, Q, z, ...
+                                      known_associations, M, ... 
+                                      LAMBDA_M, map_ids, i  );
+  total_outliers      = total_outliers + outliers;
 
   % Plot the estimates
   if n > 0
 
-    % TODO adapth this to the robot structure
     plot(robot1.mu(1), robot1.mu(2), 'rx')
-    RE = [cos(mu(3)) -sin(mu(3)); 
-          sin(mu(3))  cos(mu(3))];
+    RE = [cos(robot1.mu(3)) -sin(robot1.mu(3)); 
+          sin(robot1.mu(3))  cos(robot1.mu(3))];
 
     xsE = robot1.mu(1:3) + [RE * sensorpose(1:2); sensorpose(3)];
 
