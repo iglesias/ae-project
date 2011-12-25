@@ -6,7 +6,15 @@
 # You need to keep the arguments on the same line as the keyword
 # 
 
-OUTFILENAME simoutput2.txt
-TRAJFILENAME traj2.txt
+OUTFILENAME simoutput1.txt
+MAPFILENAME map1.txt
+TRAJFILENAME traj1.txt
 WHEEL_RADIUS_R_TRUE 0.101
 
+# The additive sensor noise (rad and m)
+SENSOR_NOISESTD_BEARING 0.01
+SENSOR_NOISESTD_RANGE   0.01
+
+# The bias on the sensor signals (rad and m)
+SENSOR_BIAS_BEARING     0.1
+SENSOR_BIAS_RANGE       0.1
