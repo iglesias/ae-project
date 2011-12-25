@@ -45,7 +45,7 @@ if 1  % TODO add verbose??
   xmax = max( d(:, 2) ) + margin;
   ymin = min( d(:, 3) ) - margin;
   ymax = max( d(:, 3) ) + margin;
-
+  
   figure(mapfig);
   draw_landmark_map( [dataset_basedir mapfile] );
   hold on;
@@ -150,6 +150,8 @@ while i < min( length(flines1), length(flines2) )
   robot2.u = calculate_odometry(denc2(1), denc2(2), E_T, B, R_R, R_L, delta_t2, ...
                                 robot2.mu);
 
+  % Localization algorithm for the first robot, the EKF robot
+
   z = [ranges'; bearings'];
   known_associations = ids';
 
@@ -158,13 +160,17 @@ while i < min( length(flines1), length(flines2) )
                                       LAMBDA_M, map_ids, i  );
   total_outliers      = total_outliers + outliers;
 
+  % Localization algorithm for the second robot, the CL robot
+  % TODO
+  % cl_localize(robot2)
+
   % Plot the estimates
   if n > 0
 
     plot(robot1.mu(1), robot1.mu(2), 'rx')
 
     pcov = make_covariance_ellipses(robot1.mu, robot1.sigma);
-    set(hcovs, 'xdata', pcov(1, :), 'ydata', pcov(2,:));
+    set( hcovs, 'xdata', pcov(1, :), 'ydata', pcov(2,:) );
     title( sprintf('t = %d, total outliers = %d, current outliers = %d', ...
                     i, total_outliers, outliers) );
                 
@@ -176,6 +182,7 @@ while i < min( length(flines1), length(flines2) )
   if n > 0        
 
     plot(truepose1(1), truepose1(2), 'gx');
+    plot(truepose2(1), truepose2(2), 'go');
     
     axis([xmin xmax ymin ymax]) 
 
@@ -185,6 +192,7 @@ while i < min( length(flines1), length(flines2) )
   if n > 0
 
     plot(odom1(1), odom1(2), 'bx');
+    plot(odom2(1), odom2(2), 'bo');
     
     axis([xmin xmax ymin ymax]) 
 

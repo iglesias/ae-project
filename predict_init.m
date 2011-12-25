@@ -3,7 +3,7 @@
 % measurements between the robots.
 % Inputs:
 %           robot(t):         robot structure   
-%           Q:                3X3
+%           Q:                3x3
 % Outputs:   
 %           robot(t):         robot structure
 function robot = predict_init(robot, Q)

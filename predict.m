@@ -1,4 +1,4 @@
-% function robot = predict(robot, Q, lastUpdate)
+% function robot = predict(robot, Q)
 % This function performs the prediction step after the first update with a
 % measurement between the robots has taken place.
 %
