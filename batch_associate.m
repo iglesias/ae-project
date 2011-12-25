@@ -39,7 +39,7 @@ for i = 1:n
         zhat_k = observation_model(robot.mu_bar, M, k);
         H_k(2*k-1:2*k, :) = ...
             jacobian_observation_model(robot.mu_bar, M, k, zhat_k, 1);
-        S_k = H_k(2*k-1:2*k, :)*sigma_bar*H_k(2*k-1:2*k, :)' + Q;
+        S_k = H_k(2*k-1:2*k, :)*robot.sigma_bar*H_k(2*k-1:2*k, :)' + Q;
         nu_k(2*k-1:2*k) = z(:, i) - zhat_k;
         
         % IMPORTANT: normalize the bearing error

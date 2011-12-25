@@ -1,8 +1,12 @@
-% In this file all the constants of the project are defined and they should not
-% be changed in any other part of the code. They can be accessed from any other
-% function writing global and the name of the constants to use
+% function constants
+% Load all the constants of the project . They are defined here and they 
+% must not be changed in any other part of the code. They can be accessed 
+% from any other function writing global and the name of the constants 
+% to use
+%
+function constants
 
-global
+global E_T  B  R_L  R_R  LAMBDA_M  Q  R
 
 % Wheels and encoders data
 E_T = 2048;

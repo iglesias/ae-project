@@ -10,9 +10,11 @@
 %
 function run_cl(simoutfile1, simoutfile2, mapfile)
 
+%% Parameter Initilization
+
 global E_T  B  R_L  R_R  LAMBDA_M  Q  R
 
-%% Parameter Initilization
+constants;
 
 % Robot structures (initial covariances and poses)
 % TODO parametrize this functions because probably we don't want all the robots
@@ -23,8 +25,8 @@ robot2 = init_robot();
 % Miscellaneous
 % sensorpose      = zeros(3, 1);
 total_outliers  = 0;
-enc1            = zeros(1, 2);
-enc2            = zeros(1, 2);
+enc1            = zeros(2, 1);
+enc2            = zeros(2, 1);
 t               = 0;
 
 %% Figures Initialization
@@ -82,7 +84,7 @@ while 1
   if ~ischar(line)
     break
   end
-  flines1 = [flines1{:} line];
+  flines1 = {flines1{:} line};
 end
 
 flines2 = {};
@@ -91,7 +93,7 @@ while 1
   if ~ischar(line)
     break
   end
-  flines2 = [flines2{:} line];
+  flines2 = {flines2{:} line};
 end
 
 fclose(fid1);
@@ -99,7 +101,7 @@ fclose(fid2);
 
 %% Main Loop
 i = 0;
-while i < min( length(flines1), length(fline2) )
+while i < min( length(flines1), length(flines2) )
 
   i       = i + 1;
 
@@ -151,7 +153,7 @@ while i < min( length(flines1), length(fline2) )
   z = [ranges'; bearings'];
   known_associations = ids';
 
-  [robot1, outliers]  = ekf_localize( robot1, sigma, R, Q, z, ...
+  [robot1, outliers]  = ekf_localize( robot1, R, Q, z, ...
                                       known_associations, M, ... 
                                       LAMBDA_M, map_ids, i  );
   total_outliers      = total_outliers + outliers;

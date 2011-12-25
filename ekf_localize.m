@@ -20,9 +20,9 @@
 function [robot, outliers] = ekf_localize(robot, R, Q, z, known_asso, ...
                                           M, lambda_m, MAP_IDS, t)
                                         
-robot = predict(robot, R);
+robot = predict(robot, Q);
 
-[c, outlier, nu_bar, H_bar] = batch_associate(robot, z, M, lambda_m, Q);
+[c, outlier, nu_bar, H_bar] = batch_associate(robot, z, M, lambda_m, R);
 
 if sum(outlier)
   fprintf('%d measurements were labelled as outliers, t = %d', ...
@@ -45,13 +45,13 @@ ix          = ix(:);
 n       = length(valid_ixs);
 nu_bar  = nu_bar(ix);
 H_bar   = H_bar(ix, :);
-Q_bar   = zeros(2*n, 2*n);
+R_bar   = zeros(2*n, 2*n);
 for i = 1:n
     ii = 2*i + (-1:0);
-    Q_bar(ii, ii) = Q;
+    R_bar(ii, ii) = R;
 end
 
-robot = batch_update(robot, H_bar, Q_bar, nu_bar);
+robot = batch_update(robot, H_bar, R_bar, nu_bar);
 
 outliers = sum(outlier);
 
