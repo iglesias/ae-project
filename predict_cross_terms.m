@@ -2,7 +2,7 @@
 % This function predicts the value of the cross correlation terms between two
 % robots. This is not performed in the function predict because it must be done
 % just before the update (when the two robots exchange data). Here it is not
-% important which robot played the role of observer/observed but their indexes
+% important which robot played the role of observer/observed but their indices
 % are important.
 % Inputs:
 %           robot1(t):    robot structure
