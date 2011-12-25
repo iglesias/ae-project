@@ -1,11 +1,14 @@
 % function robot = predict(robot, Q, lastUpdate)
 % This function performs the prediction step after the first update with a
 % measurement between the robots has taken place.
+%
 % Inputs:
 %           robot(t):         robot structure   
 %           Q:                3X3
+%                              
 % Outputs:   
 %           robot(t):         robot structure
+%                              
 function robot = predict(robot, Q)
 
 g = robot.mu + robot.u;   % Linearization
