@@ -16,9 +16,12 @@ if robot.never_updated
   robot = predict_init(robot, Q);
  
   % TODO Generalize this so it works for observed robots running CL
-  if nargin > 2
+  if nargin > 4
     observed = update_init_observed(observed, robot, Rrobo, z);
-    robot = update_init_observer(observed, robot, Rrobo, z);
+    robot    = update_init_observer(observed, robot, Rrobo, z);
+  else
+    robot.mu    = robot.mu_bar;
+    robot.sigma = robot.sigma_bar;
   end
   
 else
@@ -26,10 +29,13 @@ else
   robot = predict(robot, Q);
   
   % TODO Generalize this so it works for observed robots running CL
-  if nargin > 2
+  if nargin > 4
     [robot, observed] = predict_cross_terms(robot, observed);
     observed = update_observed(observed, robot, Rrobo, z);
     robot = update_observer(observed, robot, Rrobo, z);
+  else
+    robot.mu    = robot.mu_bar;
+    robot.sigma = robot.sigma_bar;
   end
   
 end
