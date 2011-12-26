@@ -9,9 +9,9 @@
 %                           to later predict the cross correlation terms
 %           never_updated   this refers just to CL updates
 %
-function robot = init_robot()
+function robot = init_robot(index)
 
-%robot.u          % Control signal of the robot
+robot.index         = index;
 robot.mu            = zeros(3, 1);            % Initial estimate of state
 robot.sigma         = 1e-10*diag( [1 1 1] );  % Initial covariance matrix
 robot.last_update   = false;

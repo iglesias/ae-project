@@ -19,8 +19,8 @@ constants;
 % Robot structures (initial covariances and poses)
 % TODO parametrize this functions because probably we don't want all the robots
 % starting on the same location
-robot1 = init_robot();
-robot2 = init_robot();
+robot1 = init_robot(1);
+robot2 = init_robot(2);
 
 % Miscellaneous
 % sensorpose      = zeros(3, 1);
@@ -110,7 +110,7 @@ while i < min( length(flines1), length(flines2) )
 
   line    = flines1{i};
   values  = sscanf(line, '%f');
-
+  
   pt1          = t;
   t1           = values(1);
   delta_t1     = t1 - pt1;
@@ -121,6 +121,7 @@ while i < min( length(flines1), length(flines2) )
   truepose1    = values(7:9);
 
   n1 = values(10);
+  
   if (n1 > 0)
     bearings1 = values(12:3:12+3*(n1-1));
     ranges1   = values(13:3:13+3*(n1-1));
@@ -188,7 +189,7 @@ while i < min( length(flines1), length(flines2) )
   % TODO
   % cl_localize(robot2)
 
-  z2 = [x_diff_21',y_diff_21',theta_diff_21'];
+  z2 = [x_diff_21'; y_diff_21'; theta_diff_21'];
 
   robot2 = cl_localize(robot2, Q, robot1, R_observer, z2);  
   

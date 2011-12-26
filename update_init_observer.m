@@ -44,7 +44,7 @@ Gamma = [
 R_tilde = Gamma*Rrobo*Gamma';
 
 % Compute S_tilde using H_tilde and R_tilde
-S_tilde = H_tilde*observer.sigma_bar*H_tilde' + observed_sigma_bar + ...
+S_tilde = H_tilde*observer.sigma_bar*H_tilde' + observed.sigma_bar + ...
           R_tilde;
 S_tinv  = S_tilde\eye(3);
 
