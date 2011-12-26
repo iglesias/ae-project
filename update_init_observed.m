@@ -49,12 +49,12 @@ S_tilde = H_tilde*observer.sigma_bar*H_tilde' + observed.sigma_bar + ...
 S_tinv  = S_tilde\eye(3);
 
 % Update the mean of the belief
-observed.mu = (eye(3) - observed.sigma_bar*S_tinv)*observed.mu_bar + ...
-              observed.sigma_bar*S_tinv*(observer.mu_bar + Gamma*z);
+% % observed.mu = (eye(3) - observed.sigma_bar*S_tinv)*observed.mu_bar + ...
+% %               observed.sigma_bar*S_tinv*(observer.mu_bar + Gamma*z);
 
 % Update the uncertainty in the belief
-observed.sigma = observed.sigma_bar - ...
-                 observed.sigma_bar * S_tinv * observed.sigma_bar;
+% % observed.sigma = observed.sigma_bar - ...
+% %                  observed.sigma_bar * S_tinv * observed.sigma_bar;
 
 % Introduce the cross correlation term
 observed.cross = observed.sigma_bar * S_tinv * H_tilde * observer.sigma_bar;
