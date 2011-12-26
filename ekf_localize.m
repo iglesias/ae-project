@@ -55,4 +55,8 @@ robot = batch_update(robot, H_bar, R_bar, nu_bar);
 
 outliers = sum(outlier);
 
+if sum(sum(robot.sigma~=robot.sigma'))
+    display('warning, sigma is not symmetric');
+end
+
 end
