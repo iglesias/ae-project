@@ -17,6 +17,7 @@ if robot.never_updated
  
   % TODO Generalize this so it works for observed robots running CL
   if nargin > 2
+    observed = update_init_observed(observed, robot, Rrobo, z);
     robot = update_init_observer(observed, robot, Rrobo, z);
   end
   
@@ -26,6 +27,8 @@ else
   
   % TODO Generalize this so it works for observed robots running CL
   if nargin > 2
+    [robot, observed] = predict_cross_terms(robot, observed);
+    observed = update_observed(observed, robot, Rrobo, z);
     robot = update_observer(observed, robot, Rrobo, z);
   end
   

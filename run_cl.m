@@ -190,7 +190,9 @@ while i < min( length(flines1), length(flines2) )
 
   z2 = [x_diff_21',y_diff_21',theta_diff_21'];
 
-  robot2 = cl_localize(robot2, Q, robot1, R_observer, z2);  % Plot the estimates
+  robot2 = cl_localize(robot2, Q, robot1, R_observer, z2);  
+  
+  % Plot the estimates
   if n1 > 0
 
     plot(robot1.mu(1), robot1.mu(2), 'rx')
