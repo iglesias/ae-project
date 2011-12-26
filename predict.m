@@ -1,4 +1,4 @@
-% function robot = predict(robot, Q, lastUpdate)
+% function robot = predict(robot, Q)
 % This function performs the prediction step after the first update with a
 % measurement between the robots has taken place.
 %
@@ -25,10 +25,10 @@ robot.sigma_bar = G*robot.sigma*G' + Q;
 % Compute or refresh the temporal terms required to predict the cross
 % correlation terms in the next update
 
-% In the robot structure, lastUpdate indicates whether this is the first
+% In the robot structure, last_update indicates whether this is the first
 % prediction after an update step or not
 
-if robot.lastUpdate
+if robot.last_update
 
   % TODO generalize this for the case when there are more than two robots
   switch robot.index
@@ -42,7 +42,7 @@ if robot.lastUpdate
       disp('Problem with the robot index!')
   end
 
-  robot.lastUpdate = false;
+  robot.last_update = false;
 
 else
   robot.P_ita = G*robot.P_ita;

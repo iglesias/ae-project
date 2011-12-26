@@ -70,7 +70,7 @@ observer.cross =  observer.cross_bar - ...
                   S_tinv* ...
                   ( observed.sigma_bar - H_tilda*observer.cross_bar );
               
-observer.lastUpdate = true;
+observer.last_update = true;
 
 end
   

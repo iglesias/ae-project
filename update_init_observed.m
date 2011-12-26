@@ -59,6 +59,7 @@ observed.sigma = observed.sigma_bar - ...
 % Introduce the cross correlation term
 observed.cross = observed.sigma_bar * S_tinv * H_tilde * observer.sigma_bar;
 
-observed.lastUpdate = true;
+observed.last_update    = true;
+observed.never_updated  = false;
 
 end
