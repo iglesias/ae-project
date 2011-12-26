@@ -11,6 +11,7 @@
 %
 function robot = init_robot()
 
+robot.u          % Control signal of the robot
 robot.mu            = zeros(3, 1);            % Initial estimate of state
 robot.sigma         = 1e-10*diag( [1 1 1] );  % Initial covariance matrix
 robot.last_update   = false;

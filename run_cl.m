@@ -24,7 +24,8 @@ robot2 = init_robot();
 
 % Miscellaneous
 % sensorpose      = zeros(3, 1);
-total_outliers  = 0;
+total_outliers1 = 0;
+total_outliers2 = 0;
 enc1            = zeros(2, 1);
 enc2            = zeros(2, 1);
 t               = 0;
@@ -119,15 +120,15 @@ while i < min( length(flines1), length(flines2) )
   denc1        = enc1 - penc1;
   truepose1    = values(7:9);
 
-  n = values(10);
-  if (n > 0)
-    bearings = values(12:3:end);
-    ranges   = values(13:3:end);
-    ids      = values(11:3:end);
+  n1 = values(10);
+  if (n1 > 0)
+    bearings1 = values(12:3:12+3*(n1-1));
+    ranges1   = values(13:3:13+3*(n1-1));
+    ids1      = values(11:3:11+3*(n1-1));
   else
-    bearings = [];
-    ranges   = [];
-    ids      = [];
+    bearings1 = [];
+    ranges1   = [];
+    ids1      = [];
   end
 
   % Read robot2's data
@@ -142,6 +143,17 @@ while i < min( length(flines1), length(flines2) )
   enc2         = values(5:6);
   denc2        = enc2 - penc2;
   truepose2    = values(7:9);
+  
+  n2 = values(10);
+  if (n2 > 0)
+    bearings2 = values(12:3:12+3*(n2-1));
+    ranges2   = values(13:3:13+3*(n2-1));
+    ids2      = values(11:3:11+3*(n2-1));
+  else
+    bearings2 = [];
+    ranges2   = [];
+    ids2      = [];
+  end
 
   % Compute the control signals of the robots
 
@@ -152,34 +164,34 @@ while i < min( length(flines1), length(flines2) )
 
   % Localization algorithm for the first robot, the EKF robot
 
-  z = [ranges'; bearings'];
-  known_associations = ids';
+  z1 = [ranges1'; bearings1'];
+  known_associations1 = ids1';
 
-  [robot1, outliers]  = ekf_localize( robot1, R, Q, z, ...
-                                      known_associations, M, ... 
+  [robot1, outliers1] = ekf_localize( robot1, R, Q, z1, ...
+                                      known_associations1, M, ... 
                                       LAMBDA_M, map_ids, i  );
-  total_outliers      = total_outliers + outliers;
+  total_outliers1     = total_outliers1 + outliers1;
 
   % Localization algorithm for the second robot, the CL robot
   % TODO
   % cl_localize(robot2)
 
   % Plot the estimates
-  if n > 0
+  if n1 > 0
 
     plot(robot1.mu(1), robot1.mu(2), 'rx')
 
     pcov = make_covariance_ellipses(robot1.mu, robot1.sigma);
     set( hcovs, 'xdata', pcov(1, :), 'ydata', pcov(2,:) );
     title( sprintf('t = %d, total outliers = %d, current outliers = %d', ...
-                    i, total_outliers, outliers) );
+                    i, total_outliers1, outliers1) );
                 
     axis( [xmin xmax ymin ymax] ) 
 
   end
 
   % Plot the true pose
-  if n > 0        
+  if n1 > 0        
 
     plot(truepose1(1), truepose1(2), 'gx');
     plot(truepose2(1), truepose2(2), 'go');
@@ -189,7 +201,7 @@ while i < min( length(flines1), length(flines2) )
   end
 
   % Plot the odometry
-  if n > 0
+  if n1 > 0
 
     plot(odom1(1), odom1(2), 'bx');
     plot(odom2(1), odom2(2), 'bo');
