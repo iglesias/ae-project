@@ -32,8 +32,8 @@ t               = 0;
 
 %% Figures Initialization
 
-dataset_basedir = 'Datasets/';
-margin          = 5;
+dataset_basedir = 'Datasets/same_map/';
+margin          = 20;
 
 d = load( [dataset_basedir mapfile] );
 
