@@ -78,6 +78,6 @@ cross_observer = observer.cross_bar - ...
 
 observed.cross = cross_observer';
 
-observed.lastUpdate = true;
+observed.last_update = true;
 
 end
