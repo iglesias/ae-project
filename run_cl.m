@@ -188,11 +188,12 @@ while i < min( length(flines1), length(flines2) )
   % Localization algorithm for the second robot, the CL robot
   % TODO
   % cl_localize(robot2)
-
-  z2 = [x_diff_21'; y_diff_21'; theta_diff_21'];
-
-  robot2 = cl_localize(robot2, Q, robot1, R_observer, z2);  
-  
+    
+  if mod(i,20)==0
+    z2 = [x_diff_21'; y_diff_21'; theta_diff_21'];
+    [robot2, robot1] = cl_localize(robot2, Q, robot1, R_observer, z2);  
+  end
+    
   % Plot the estimates
   if n1 > 0
 

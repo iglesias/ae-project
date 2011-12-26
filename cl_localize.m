@@ -9,7 +9,7 @@
 %                           between robots
 %           z               observation from one robot to another
 %
-function robot = cl_localize(robot, Q, observed, Rrobo, z)
+function [robot, observed] = cl_localize(robot, Q, observed, Rrobo, z)
 
 if robot.never_updated
 
