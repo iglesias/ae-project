@@ -155,9 +155,9 @@ while i < min( length(flines1), length(flines2) )
     bearings2 = values(12:3:12+3*(n2-1));
     ranges2   = values(13:3:13+3*(n2-1));
     ids2      = values(11:3:11+3*(n2-1));
-    x_diff_21       = values(11+3*n1);
-    y_diff_21       = values(12+3*n1);
-    theta_diff_21   = values(13+3*n1);
+    x_diff_21       = values(11+3*n2);
+    y_diff_21       = values(12+3*n2);
+    theta_diff_21   = values(13+3*n2);
   else
     bearings2 = [];
     ranges2   = [];
