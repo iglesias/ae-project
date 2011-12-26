@@ -32,7 +32,7 @@ t               = 0;
 
 %% Figures Initialization
 
-dataset_basedir = 'Datasets/same_map/';
+dataset_basedir = 'Datasets/';
 margin          = 20;
 
 d = load( [dataset_basedir mapfile] );
@@ -58,7 +58,7 @@ end
 % ??
 
 if 1  % TODO add verbose??
-  figure(mapfig);
+  figure(mapfig); 
   hcovs = plot(0, 0, 'r', 'erasemode', 'xor');
 end
 
@@ -104,7 +104,7 @@ fclose(fid2);
 i = 0;
 while i < min( length(flines1), length(flines2) )
 
-  i       = i + 1;
+  i = i + 1;
 
   % Read robot1's data
 
@@ -186,19 +186,34 @@ while i < min( length(flines1), length(flines2) )
   total_outliers1     = total_outliers1 + outliers1;
   
   % Localization algorithm for the second robot, the CL robot
-  % TODO
   % cl_localize(robot2)
     
-  if mod(i,20)==0
-    z2 = [x_diff_21'; y_diff_21'; theta_diff_21'];
-    [robot2, robot1] = cl_localize(robot2, Q, robot1, R_observer, z2);  
+  z2 = [x_diff_21'; y_diff_21'; theta_diff_21'];
+  
+  % Recompute the measurement from one robot to the other
+  truepose1(3) = wrapToPi( truepose1(3) );
+  truepose2(3) = wrapToPi( truepose2(3) );
+  
+  c = [
+        cos( truepose2(3) )  -sin( truepose2(3) );
+        sin( truepose2(3) )   cos( truepose2(3) )
+      ];
+  a = c'*(truepose1(1:2)-truepose2(1:2));
+  b = wrapToPi( truepose1(3) - truepose2(3) );
+  z2 = [a ; b];
+  
+  if mod(i, 20) == 0
+    [robot2, robot1] = cl_localize(robot2, Q, robot1, R_observer, z2);
+  else
+    [robot2, robot1] = cl_localize(robot2, Q, robot1, R_observer);
   end
-    
+
   % Plot the estimates
   if n1 > 0
 
-    plot(robot1.mu(1), robot1.mu(2), 'rx')
-
+    plot(robot1.mu(1), robot1.mu(2), 'rx');
+    plot(robot2.mu(1), robot2.mu(2), 'ro');
+    
     pcov = make_covariance_ellipses(robot1.mu, robot1.sigma);
     set( hcovs, 'xdata', pcov(1, :), 'ydata', pcov(2,:) );
     title( sprintf('t = %d, total outliers = %d, current outliers = %d', ...
@@ -207,13 +222,13 @@ while i < min( length(flines1), length(flines2) )
     axis( [xmin xmax ymin ymax] ) 
 
   end
-
+  
   % Plot the true pose
   if n1 > 0        
 
     plot(truepose1(1), truepose1(2), 'gx');
     plot(truepose2(1), truepose2(2), 'go');
-    
+
     axis([xmin xmax ymin ymax]) 
 
   end
