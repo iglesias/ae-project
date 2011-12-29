@@ -126,16 +126,16 @@ while i < min( length(flines1), length(flines2) )
     bearings1 = values(12:3:12+3*(n1-1));
     ranges1   = values(13:3:13+3*(n1-1));
     ids1      = values(11:3:11+3*(n1-1));
-    x_diff_12       = values(11+3*n1);
-    y_diff_12       = values(12+3*n1);
-    theta_diff_12   = values(13+3*n1);
+    %x_diff_12       = values(11+3*n1);
+    %y_diff_12       = values(12+3*n1);
+    %theta_diff_12   = values(13+3*n1);
   else
     bearings1 = [];
     ranges1   = [];
     ids1      = [];
-    x_diff_12       = [];
-    y_diff_12       = [];
-    theta_diff_12   = [];
+    %x_diff_12       = [];
+    %y_diff_12       = [];
+    %theta_diff_12   = [];
   end
 
   % Read robot2's data
@@ -156,16 +156,16 @@ while i < min( length(flines1), length(flines2) )
     bearings2 = values(12:3:12+3*(n2-1));
     ranges2   = values(13:3:13+3*(n2-1));
     ids2      = values(11:3:11+3*(n2-1));
-    x_diff_21       = values(11+3*n2);
-    y_diff_21       = values(12+3*n2);
-    theta_diff_21   = values(13+3*n2);
+    %x_diff_21       = values(11+3*n2);
+    %y_diff_21       = values(12+3*n2);
+    %theta_diff_21   = values(13+3*n2);
   else
     bearings2 = [];
     ranges2   = [];
     ids2      = [];
-    x_diff_21       = [];
-    y_diff_21       = [];
-    theta_diff_21   = [];
+    %x_diff_21       = [];
+    %y_diff_21       = [];
+    %theta_diff_21   = [];
   end
 
   % Compute the control signals of the robots
@@ -188,7 +188,7 @@ while i < min( length(flines1), length(flines2) )
   % Localization algorithm for the second robot, the CL robot
   % cl_localize(robot2)
     
-  z2 = [x_diff_21'; y_diff_21'; theta_diff_21'];
+  %z2 = [x_diff_21'; y_diff_21'; theta_diff_21'];
   
   % Recompute the measurement from one robot to the other
   truepose1(3) = wrapToPi( truepose1(3) );
@@ -202,11 +202,13 @@ while i < min( length(flines1), length(flines2) )
   b = wrapToPi( truepose1(3) - truepose2(3) );
   z2 = [a ; b];
   
-  if mod(i, 20) == 0
+  if mod(i, 1) == 0
     [robot2, robot1] = cl_localize(robot2, Q, robot1, R_observer, z2);
   else
     [robot2, robot1] = cl_localize(robot2, Q, robot1, R_observer);
   end
+
+% %   [robot2, robot1] = cl_localize(robot2, Q, robot1, R_observer, z2);
 
   % Plot the estimates
   if n1 > 0
@@ -216,9 +218,12 @@ while i < min( length(flines1), length(flines2) )
     
     pcov = make_covariance_ellipses(robot1.mu, robot1.sigma);
     set( hcovs, 'xdata', pcov(1, :), 'ydata', pcov(2,:) );
+    pcov = make_covariance_ellipses(robot2.mu, robot2.sigma);
+    set( hcovs, 'xdata', pcov(1, :), 'ydata', pcov(2,:) );
     title( sprintf('t = %d, total outliers = %d, current outliers = %d', ...
                     i, total_outliers1, outliers1) );
-                
+    
+                      
     axis( [xmin xmax ymin ymax] ) 
 
   end
