@@ -1,8 +1,11 @@
 % function robot = init_robot()
 % Initializes a robot structure
 %
+% Inputs:
+%           index           identifier for the robot (must be unique)
+%
 % Outputs:
-%           robot         robot structure
+%           robot           robot structure
 %
 % Robot attributes:
 %           P_ita           each robot needs to track its prediction steps 
