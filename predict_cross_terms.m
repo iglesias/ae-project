@@ -11,13 +11,14 @@
 % Outputs:
 %           robot1(t):    robot structure
 %           robot2(t):    robot structure
+%
 function [robot1, robot2] = predict_cross_terms(robot1, robot2)
 
-% TODO generalize this for the case when there are more than two robots. Should
-% it affect?
+% Useful constants
+i = robot1.index;
+j = robot2.index;
 
-robot1.cross_bar = robot1.P_ita * robot2.P_ita';
-
-robot2.cross_bar = robot2.P_ita * robot1.P_ita';
+robot1.sigma_bar(:, :, j) = robot1.P_ita(:, :, j) * robot2.P_ita(:, :, i)';
+robot2.sigma_bar(:, :, i) = robot2.P_ita(:, :, i) * robot1.P_ita(:, :, j)';
 
 end

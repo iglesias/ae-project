@@ -13,6 +13,13 @@ Thoughts for the report:
 observed (the robot saw another robot or was seen by another robot) so the
 simulation represents better a real decentralized system.
 
+- In order to handle the cross-correlation terms we have made the decision that
+each of the robots takes care of one complete row of the centralized system
+matrix. This means that the robot 1 for example would store information about
+P11, P12 and P13. Robot 2 and 3 would store P21 and P23, respectively. This
+might be a bit redundant since P12 = P21' and P13 = P31' but it is a somewhat
+general representation.
+
 TODO
 
 - The non-initial update step for the robots that have not participated in the

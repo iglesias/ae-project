@@ -14,6 +14,10 @@
 %
 function observer = update_init_observer(observed, observer, Rrobo, z)
 
+% Useful constants
+i = observer.index;
+j = observed.index;
+
 % Compute H_tilde
 
 J = [
@@ -44,20 +48,25 @@ Gamma = [
 R_tilde = Gamma*Rrobo*Gamma';
 
 % Compute S_tilde using H_tilde and R_tilde
-S_tilde = H_tilde*observer.sigma_bar*H_tilde' + observed.sigma_bar + ...
-          R_tilde;
+S_tilde = H_tilde*observer.sigma_bar(:, :, i)*H_tilde' + ...
+          observed.sigma_bar(:, :, j) + R_tilde;
 S_tinv  = S_tilde\eye(3);
 
 % Update the mean of the belief
-observer.mu = (eye(3) - observer.sigma_bar * H_tilde' * S_tinv)*observer.mu_bar + ...
-              observer.sigma_bar * H_tilde' * S_tinv*(observed.mu_bar - Gamma*z);
+observer.mu = ...
+            (eye(3) - observer.sigma_bar(:, :, i) * H_tilde' * S_tinv)*...
+            observer.mu_bar + ...
+            observer.sigma_bar(:, :, i) * H_tilde' * S_tinv* ...
+            (observed.mu_bar - Gamma*z);
 
 % Update the uncertainty in the belief
-observer.sigma = observer.sigma_bar - ...
-            observer.sigma_bar * H_tilde' * S_tinv * H_tilde * observer.sigma_bar;
+observer.sigma(:, :, i) = observer.sigma_bar(:, :, i) - ...
+                          observer.sigma_bar(:, :, i) * H_tilde' * ...
+                          S_tinv * H_tilde * observer.sigma_bar(:, :, i);
 
 % Introduce the cross correlation term
-observer.cross = observer.sigma_bar * H_tilde' * S_tinv * observed.sigma_bar;
+observer.sigma(:, :, j) = observer.sigma_bar(:, :, i) * H_tilde' * ...
+                          S_tinv * observed.sigma_bar(:, :, j);
 
 observer.last_update    = true;
 observer.never_updated  = false;

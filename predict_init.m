@@ -8,6 +8,9 @@
 %           robot(t):         robot structure
 function robot = predict_init(robot, Q)
 
+% Useful constants
+i = robot.index;
+
 g = robot.mu + robot.u;   % Linearization
 G = [
         1   0   -robot.u(2);
@@ -16,7 +19,9 @@ G = [
     ];                    % Jacobian of g
 
 % Prediction step
-robot.mu_bar    = g;
-robot.sigma_bar = G*robot.sigma*G' + Q;
+robot.mu_bar              = g;
+sigma                     = robot.sigma(:, :, i);   % Alias
+sigma_bar                 = G*sigma*G' + Q;         % Alias
+robot.sigma_bar(:, :, i)  = sigma_bar;
 
 end

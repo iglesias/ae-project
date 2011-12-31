@@ -19,16 +19,16 @@ constants;
 % TODO parametrize this functions because probably we don't want all the robots
 % starting on the same location
 for i = 1:nrobots
-  robots(i) = init_robot(i);
+  robots(i) = init_robot(i, nrobots);
 end
 
 % Miscellaneous
 % sensorpose      = zeros(3, 1);
 total_outliers1 = 0;
-enc1            = zeros(2, 1);
-t               = 0;
 trueposes       = zeros(nrobots, 3);
+encs            = zeros(nrobots, 2);
 odoms           = zeros(nrobots, 3);
+ts              = zeros(nrobots, 1);  % Current timestamps
 
 %% Figures Initialization
 
@@ -109,26 +109,25 @@ i = 0;
 while i < niters
 
   i = i + 1;
-
-  % Read robot i's data
-
+  
+  % Read robots' data
+  
+  pts   = ts;     % Previous timestamps
+  pencs = encs;   % Previous encoders signals
+  
   for r = 1:nrobots
     line   = flines{r}{i};
     values = sscanf(line, '%f');
     
+    ts(r)           = values(1);
     odoms(r, :)     = values(2:4);
+    encs(r, :)      = values(5:6);
     trueposes(r, :) = values(7:9);
   end
   
-%   pt1          = t;
-%   t1           = values(1);
-%   delta_t1     = t1 - pt1;
-%   odom1        = values(2:4);
-%   penc1        = enc1;
-%   enc1         = values(5:6);
-%   denc1        = enc1 - penc1;
-%   truepose1    = values(7:9);
-% 
+  delta_ts = ts - pts;
+  dencs    = encs - pencs;
+  
 %   n1 = values(10);
 %   
 %   if (n1 > 0)
@@ -140,14 +139,13 @@ while i < niters
 %     ranges1   = [];
 %     ids1      = [];
 %   end
-% 
-%   % Compute the control signals of the robots
-% 
-%   robot1.u = calculate_odometry(denc1(1), denc1(2), E_T, B, R_R, R_L, ...
-%                                 delta_t1, robot1.mu);
-%   robot2.u = calculate_odometry(denc2(1), denc2(2), E_T, B, R_R, R_L, ...
-%                                 delta_t2, robot2.mu);
-% 
+
+  % Compute the control signals of the robots
+  for r = 1:nrobots
+    robots(r).u = calculate_odometry(dencs(r, 1), dencs(r, 2), E_T, B, ...
+                                     R_R, R_L, delta_ts(r), robots(r).mu);
+  end
+
 %   % Localization algorithm for the first robot, the EKF robot
 % 
 %   z1 = [ranges1'; bearings1'];
@@ -158,41 +156,24 @@ while i < niters
 %                                       LAMBDA_M, map_ids, i  );
 %   total_outliers1     = total_outliers1 + outliers1;
 %   
-%   % Localization algorithm for the second robot, the CL robot
-%   
-%   % Recompute the measurement from one robot to the other
-%   truepose1(3) = wrapToPi( truepose1(3) );
-%   truepose2(3) = wrapToPi( truepose2(3) );
-%   
-%   c = [
-%         cos( truepose2(3) )  -sin( truepose2(3) );
-%         sin( truepose2(3) )   cos( truepose2(3) )
-%       ];
-%   a = c'*(truepose1(1:2)-truepose2(1:2));
-%   b = wrapToPi( truepose1(3) - truepose2(3) );
-%   z2 = [a ; b];
-%   
-%   if mod(i, 1) == 0
-%     [robot2, robot1] = cl_localize(robot2, Q, robot1, R_observer, z2);
-%   else
-%     [robot2, robot1] = cl_localize(robot2, Q, robot1, R_observer);
-%   end
-% 
+  % Localization algorithm for the robots with CL
+  for ri = 1:nrobots
+    robots = cl_localize(robots, ri, Q, R_observer, trueposes);
+  end
+  
 %   % Plot the estimates
 %   if n1 > 0
 % 
-%     plot(robot1.mu(1), robot1.mu(2), 'rx');
-%     plot(robot2.mu(1), robot2.mu(2), 'ro');
-%     
-%     pcov = make_covariance_ellipses(robot1.mu, robot1.sigma);
-%     set( hcovs, 'xdata', pcov(1, :), 'ydata', pcov(2,:) );
-%     pcov = make_covariance_ellipses(robot2.mu, robot2.sigma);
-%     set( hcovs, 'xdata', pcov(1, :), 'ydata', pcov(2,:) );
-%     title( sprintf('t = %d, total outliers = %d, current outliers = %d', ...
-%                     i, total_outliers1, outliers1) );
-%     
-%                       
-%     axis( [xmin xmax ymin ymax] ) 
+    for r = 1:nrobots
+      plot(robots(r).mu(1), robots(r).mu(2), 'ko');
+    end
+    
+    for r = 1:nrobots
+      pcov = make_covariance_ellipses(robots(r).mu, robots(r).sigma);
+      set( hcovs, 'xdata', pcov(1, :), 'ydata', pcov(2,:) );
+    end
+    
+    axis( [xmin xmax ymin ymax] ) 
 % 
 %   end
   

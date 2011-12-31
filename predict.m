@@ -9,7 +9,10 @@
 % Outputs:   
 %           robot(t):         robot structure
 %                              
-function robot = predict(robot, Q)
+function robot = predict(robot, Q, nrobots)
+
+% Useful constants
+i = robot.index;
 
 g = robot.mu + robot.u;   % Linearization
 G = [
@@ -19,8 +22,10 @@ G = [
     ];                    % Jacobian of g
 
 % Prediction step
-robot.mu_bar    = g;
-robot.sigma_bar = G*robot.sigma*G' + Q;
+robot.mu_bar              = g;
+sigma                     = robot.sigma(:, :, i);   % Alias
+sigma_bar                 = G*sigma*G' + Q;         % Alias
+robot.sigma_bar(:, :, i)  = sigma_bar;
 
 % Compute or refresh the temporal terms required to predict the cross
 % correlation terms in the next update
@@ -30,22 +35,34 @@ robot.sigma_bar = G*robot.sigma*G' + Q;
 
 if robot.last_update
 
-  % TODO generalize this for the case when there are more than two robots
-  switch robot.index
-    case 1
-      [U, W, ~] = svd( robot.cross );
-      robot.P_ita = U*W;
-    case 2
-      [~, ~, V] = svd( robot.cross' );
-      robot.P_ita = V;    
-    otherwise
-      disp('Problem with the robot index!')
+  for r = 1:nrobots
+    
+    if i ~= r
+      
+      if i < r
+        [U, W, ~] = svd( robot.sigma(:, :, r) );
+        robot.P_ita(:, :, r) = U*W;  
+      elseif i > r
+        [~, ~, V] = svd( robot.sigma(:, :, r)' );
+        robot.P_ita(:, :, r) = V;
+      end
+      
+    end
+    
   end
 
   robot.last_update = false;
 
 else
-  robot.P_ita = G*robot.P_ita;
+  
+  for r = 1:nrobots
+    
+    if i ~= r
+      robot.P_ita(:, :, r) = G*robot.P_ita(:, :, r);
+    end
+    
+  end
+  
 end
 
 end
