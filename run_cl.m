@@ -17,10 +17,9 @@ global DEBLV
 constants;
 
 % Robot structures (initial covariances and poses)
-% TODO parametrize this functions because probably we don't want all the robots
-% starting on the same location
-for i = 1:nrobots
-  robots(i) = init_robot(i, nrobots);
+robots(1) = init_robot(1, nrobots, 1);
+for i = 2:nrobots
+  robots(i) = init_robot(i, nrobots, 2);
 end
 
 % Miscellaneous
