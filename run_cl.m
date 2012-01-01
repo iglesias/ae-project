@@ -12,6 +12,7 @@ function run_cl(nrobots, mapfile)
 %% Parameter Initilization
 
 global E_T  B  R_L  R_R  LAMBDA_M  Q  R_observed  R_observer  SIMPRE COLIDX
+global DEBLV
 
 constants;
 
@@ -105,7 +106,12 @@ for i = 2:nrobots
   tmp    = length( flines{i} );
   niters = min(niters, tmp);
 end
-i = 0;
+
+% More initializations
+i        = 0;
+sigmas   = zeros(nrobots, niters, 3);
+errposes = zeros(nrobots, niters, 3);
+
 while i < niters
 
   i = i + 1;
@@ -158,20 +164,53 @@ while i < niters
 %   
   % Localization algorithm for the robots with CL
   for ri = 1:nrobots
-    robots = cl_localize(robots, ri, Q, R_observer, trueposes);
+    
+    if ri == 4   % the observer
+      
+      % TODO Orthogonalize this part from the number of measurements
+      if mod(i, 2) == 0
+        rj = 2;
+      else
+        rj = 3;
+      end
+        
+        l = ri;    % index for the observer
+        m = rj;     % index for the observed
+        
+        % Generate a measurement
+        z = genrobotmeas(trueposes(l, :)', trueposes(m, :)', R_observer);
+        
+        if DEBLV
+          fprintf('>>>> Measurement from robot %d to robot %d\n', l, m);
+        end
+        
+        robots = cl_localize(robots, ri, Q, R_observer, z, l, m);
+              
+    else
+      
+      robots = cl_localize(robots, ri, Q);
+      
+    end
+        
+  end
+  
+  for r = 1:nrobots
+    errposes(r, i, :) = trueposes(r, :)' - robots(r).mu;
+    errposes(r, i, 3) = wrapToPi( errposes(1, i, 3) );
+    sigmas(r, i, :)   = diag( robots(r).sigma(:, :, r) );
   end
   
 %   % Plot the estimates
 %   if n1 > 0
 % 
     for r = 1:nrobots
-      plot(robots(r).mu(1), robots(r).mu(2), 'ko');
+      plot(robots(r).mu(1), robots(r).mu(2), [COLIDX(r) '*']);
     end
     
-    for r = 1:nrobots
-      pcov = make_covariance_ellipses(robots(r).mu, robots(r).sigma);
-      set( hcovs, 'xdata', pcov(1, :), 'ydata', pcov(2,:) );
-    end
+%     for r = 1:nrobots
+%       pcov = make_covariance_ellipses(robots(r).mu, robots(r).sigma);
+%       set( hcovs, 'xdata', pcov(1, :), 'ydata', pcov(2,:) );
+%     end
     
     axis( [xmin xmax ymin ymax] ) 
 % 
@@ -202,5 +241,35 @@ while i < niters
   drawnow
 
 end % while
+
+if 1 % TODO add verbose
+  
+  for r = 1:nrobots
+    figure;
+    clf;
+    
+    subplot(3, 1, 1);
+    hold on;
+    plot( errposes(r, :, 1) );
+    plot( 3*sqrt( sigmas(r, :, 1) ) );
+    plot( -3*sqrt( sigmas(r, :, 1) ) );
+    title( sprintf('error on x for the robot %d', r) );
+    
+    subplot(3, 1, 2);
+    hold on;
+    plot( errposes(r, :, 2) );
+    plot( 3*sqrt( sigmas(r, :, 2) ) );
+    plot( -3*sqrt( sigmas(r, :, 2) ) );
+    title( sprintf('error on y for the robot %d', r) );
+    
+    subplot(3, 1, 3);
+    hold on;
+    plot( errposes(r, :, 3) );
+    plot( 3*sqrt( sigmas(r, :, 3) ) );
+    plot( -3*sqrt( sigmas(r, :, 3) ) );
+    title( sprintf('error on theta for the robot %d', r) );
+  end
+  
+end
 
 end

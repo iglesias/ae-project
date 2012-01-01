@@ -6,7 +6,10 @@
 %
 function constants
 
-global E_T  B  R_L  R_R  LAMBDA_M  Q  R_observed  R_observer  SIMPRE  COLIDX
+global E_T  B  R_L  R_R  LAMBDA_M  Q  R_observed  R_observer  SIMPRE
+global COLIDX DEBLV
+
+%% Simulation values
 
 % Wheels and encoders data
 E_T = 2048;
@@ -22,6 +25,14 @@ Q = diag([1^2 1^2 1^2]);                % Noise in the motion model
 R_observed = diag([0.1^2 0.1^2]);       % Noise in the observations
 R_observer = diag([0.1^2 0.1^2 0.1^2]); % Noise in the observations
 
+%% File information
+
 SIMPRE = 'simcl';   % Prefix for the simulation files
 
+%% Plot information
+
 COLIDX = ['g' 'r' 'b'];
+
+%% Debug information
+
+DEBLV = 0;

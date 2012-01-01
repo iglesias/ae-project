@@ -24,6 +24,7 @@ robot.mu_bar = zeros(3, 1);
 robot.sigma              = zeros(3, 3, nrobots);
 robot.sigma(:, :, index) = 1e-10*diag( [1 1 1] );  % Initial cov. matrix
 robot.sigma_bar          = zeros(3, 3, nrobots);
+robot.sigma_bar(:, :, index) = 1e-10*diag( [1 1 1] );  % Initial cov. matrix
 
 robot.last_update   = false;
 robot.never_updated = true;
