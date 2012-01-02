@@ -22,7 +22,7 @@ global M  MAP_IDS
 constants;
 
 % Robot structures (initial covariances and poses)
-robots(1) = init_robot(1, nrobots, 2);
+robots(1) = init_robot(1, nrobots, 2);  % Put the last argument to 1 for EKF
 for r = 2:nrobots
   robots(r) = init_robot(r, nrobots, 2);
 end
@@ -172,7 +172,7 @@ while i < niters
         
       case 2
         
-        if ri == 4   % the observer
+        if ri == 2   % the observer
           
           % TODO Orthogonalize this part from the number of measurements
           if mod(i, 2) == 0
