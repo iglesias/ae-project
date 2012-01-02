@@ -165,7 +165,7 @@ while i < niters
   % Localization algorithm for the robots with CL
   for ri = 1:nrobots
     
-    if ri == 4   % the observer
+    if ri == 1   % the observer
       
       % TODO Orthogonalize this part from the number of measurements
       if mod(i, 2) == 0
