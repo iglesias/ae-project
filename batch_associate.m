@@ -18,9 +18,10 @@
 %           nu_bar(t)           2nx1
 %           H_bar(t)            2nx3
 %
-function [c,outlier, nu_bar, H_bar] = batch_associate(robot, z, M, ...
-                                                      lambda_m, Q)
+function [c,outlier, nu_bar, H_bar] = batch_associate(robot, z, M, Q)
 
+global LAMBDA_M                                                    
+                                                    
 % Useful constants and memory pre-allocation
 n       = size(z, 2);     % Number of observations
 N       = size(M, 2);     % Number of landmarks
@@ -50,7 +51,7 @@ for i = 1:n
     end
     
     [~, c(i)]   = max( lhood_k );
-    outlier(i)  = D_k( c(i) ) >= lambda_m;
+    outlier(i)  = D_k( c(i) ) >= LAMBDA_M;
     
     nu_bar(2*i-1:2*i)   = nu_k(2*c(i)-1:2*c(i));
     H_bar(2*i-1:2*i, :) =  H_k(2*c(i)-1:2*c(i), :);

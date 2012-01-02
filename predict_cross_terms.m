@@ -12,13 +12,23 @@
 %           robot1(t):    robot structure
 %           robot2(t):    robot structure
 %
-function [robot1, robot2] = predict_cross_terms(robot1, robot2)
+function robots = predict_cross_terms(robots)
 
 % Useful constants
-i = robot1.index;
-j = robot2.index;
+nrobots = length(robots);
 
-robot1.sigma_bar(:, :, j) = robot1.P_ita(:, :, j) * robot2.P_ita(:, :, i)';
-robot2.sigma_bar(:, :, i) = robot2.P_ita(:, :, i) * robot1.P_ita(:, :, j)';
+for ri = 1:nrobots
+  for rj = 1:nrobots
+   
+    if ri ~= rj
+    
+      robots(ri).sigma_bar(:, :, rj) = robots(ri).P_ita(:, :, rj) * ...
+                                       robots(rj).P_ita(:, :, ri)';
+    
+    end
+    
+  end
+end
+
 
 end

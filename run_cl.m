@@ -11,29 +11,35 @@ function run_cl(nrobots, mapfile)
 
 %% Parameter Initilization
 
-global E_T  B  R_L  R_R  LAMBDA_M  Q  R_observed  R_observer  SIMPRE COLIDX
-global DEBLV
+% Input parameters from other functions
+
+global E_T  B  R_L  R_R Q  R_landmark  R_observer  SIMPRE COLIDX DEBLV
+
+% Output parameteres
+
+global M  MAP_IDS
 
 constants;
 
 % Robot structures (initial covariances and poses)
-robots(1) = init_robot(1, nrobots, 1);
-for i = 2:nrobots
-  robots(i) = init_robot(i, nrobots, 2);
+robots(1) = init_robot(1, nrobots, 2);
+for r = 2:nrobots
+  robots(r) = init_robot(r, nrobots, 2);
 end
 
 % Miscellaneous
-% sensorpose      = zeros(3, 1);
-total_outliers1 = 0;
 trueposes       = zeros(nrobots, 3);
 encs            = zeros(nrobots, 2);
 odoms           = zeros(nrobots, 3);
 ts              = zeros(nrobots, 1);  % Current timestamps
+ids             = cell(1, nrobots);   % Variable length
+bearings        = cell(1, nrobots);
+ranges          = cell(1, nrobots);
 
 %% Figures Initialization
 
 dataset_basedir = 'Datasets/';
-margin          = 20;
+margin          = 15;
 
 d = load( [dataset_basedir mapfile] );
 
@@ -65,7 +71,7 @@ end
 %% Read Simulation Files
 
 M       = d(:, 2:3)';
-map_ids = d(:, 1)';
+MAP_IDS = d(:, 1)';
 
 % Open the simulation files
 fids    = zeros(1, nrobots);
@@ -111,6 +117,8 @@ i        = 0;
 sigmas   = zeros(nrobots, niters, 3);
 errposes = zeros(nrobots, niters, 3);
 
+niters = 250;
+
 while i < niters
 
   i = i + 1;
@@ -128,22 +136,22 @@ while i < niters
     odoms(r, :)     = values(2:4);
     encs(r, :)      = values(5:6);
     trueposes(r, :) = values(7:9);
+    
+    n = values(10);
+    if n > 0
+      ids{r}       = values(11:3:11+3*(n-1));
+      bearings{r}  = values(12:3:12+3*(n-1));
+      ranges{r}    = values(13:3:13+3*(n-1));
+    else
+      bearings{r}  = [];
+      ranges{r}    = [];
+      ids{r}       = [];
+    end
+    
   end
   
   delta_ts = ts - pts;
   dencs    = encs - pencs;
-  
-%   n1 = values(10);
-%   
-%   if (n1 > 0)
-%     bearings1 = values(12:3:12+3*(n1-1));
-%     ranges1   = values(13:3:13+3*(n1-1));
-%     ids1      = values(11:3:11+3*(n1-1));
-%   else
-%     bearings1 = [];
-%     ranges1   = [];
-%     ids1      = [];
-%   end
 
   % Compute the control signals of the robots
   for r = 1:nrobots
@@ -151,47 +159,57 @@ while i < niters
                                      R_R, R_L, delta_ts(r), robots(r).mu);
   end
 
-%   % Localization algorithm for the first robot, the EKF robot
-% 
-%   z1 = [ranges1'; bearings1'];
-%   known_associations1 = ids1';
-% 
-%   [robot1, outliers1] = ekf_localize( robot1, R_observed, Q, z1, ...
-%                                       known_associations1, M, ... 
-%                                       LAMBDA_M, map_ids, i  );
-%   total_outliers1     = total_outliers1 + outliers1;
-%   
-  % Localization algorithm for the robots with CL
+  % Localization algorithm for EKF robots
+
   for ri = 1:nrobots
     
-    if ri == 4   % the observer
+    switch robots(r).type
       
-      % TODO Orthogonalize this part from the number of measurements
-      if mod(i, 2) == 0
-        rj = 2;
-      else
-        rj = 3;
-      end
+      case 1
+        z                 = [ ranges{ri}'; bearings{ri}' ];
+        params.known_asso = ids{ri}';
+        robots = cl_localize(robots, ri, Q, R_landmark, z, params);
         
-        l = ri;    % index for the observer
-        m = rj;     % index for the observed
+      case 2
         
-        % Generate a measurement
-        z = genrobotmeas(trueposes(l, :)', trueposes(m, :)', R_observer);
+        if ri == 4   % the observer
+          
+          % TODO Orthogonalize this part from the number of measurements
+          if mod(i, 2) == 0
+            rj = 1;
+          else
+            rj = 3;
+          end
         
-        if DEBLV
-          fprintf('>>>> Measurement from robot %d to robot %d\n', l, m);
+          l = ri;     % index for the observer
+          m = rj;     % index for the observed
+        
+          % Generate a measurement
+          z = genrobotmeas(trueposes(l, :)', trueposes(m, :)', R_observer);
+
+          if DEBLV
+            fprintf('>>>> Measurement from robot %d to robot %d\n', l, m);
+          end
+
+          params.l = l;
+          params.m = m;
+          robots = cl_localize(robots, ri, Q, R_observer, z, params);
+          
+        else
+          robots = cl_localize(robots, ri, Q);
         end
+          
+      otherwise
+        disp('Error in the definition of robot type!');
+        return;
         
-        robots = cl_localize(robots, ri, Q, R_observer, z, l, m);
-              
-    else
-      
-      robots = cl_localize(robots, ri, Q);
-      
     end
-        
+    
   end
+  
+% %   if mod(i, 50) == 0
+% %     keyboard
+% %   end
   
   for r = 1:nrobots
     errposes(r, i, :) = trueposes(r, :)' - robots(r).mu;
@@ -199,9 +217,7 @@ while i < niters
     sigmas(r, i, :)   = diag( robots(r).sigma(:, :, r) );
   end
   
-%   % Plot the estimates
-%   if n1 > 0
-% 
+  % Plot the estimates
     for r = 1:nrobots
       plot(robots(r).mu(1), robots(r).mu(2), [COLIDX(r) '*']);
     end
@@ -211,31 +227,23 @@ while i < niters
 %       set( hcovs, 'xdata', pcov(1, :), 'ydata', pcov(2,:) );
 %     end
     
-    axis( [xmin xmax ymin ymax] ) 
-% 
-%   end
+  axis( [xmin xmax ymin ymax] ) 
   
   % Plot the true pose
-%   if n1 > 0        
+  
+  for r = 1:nrobots
+    plot(trueposes(r, 1), trueposes(r, 2), [COLIDX(r) 'x']);
+  end
 
-    for r = 1:nrobots
-      plot(trueposes(r, 1), trueposes(r, 2), [COLIDX(r) 'x']);
-    end
-
-    axis([xmin xmax ymin ymax]) 
-
-%   end
+  axis([xmin xmax ymin ymax]) 
 
   % Plot the odometry
-%   if n1 > 0
 
-    for r = 1:nrobots
-      plot(odoms(r, 1), odoms(r, 2), [COLIDX(r) 'o']);
-    end
+  for r = 1:nrobots
+    plot(odoms(r, 1), odoms(r, 2), [COLIDX(r) 'o']);
+  end
     
-    axis([xmin xmax ymin ymax]) 
-
-%   end
+  axis([xmin xmax ymin ymax]) 
 
   drawnow
 

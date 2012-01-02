@@ -6,7 +6,7 @@
 %
 function constants
 
-global E_T  B  R_L  R_R  LAMBDA_M  Q  R_observed  R_observer  SIMPRE
+global E_T  B  R_L  R_R  LAMBDA_M  Q  R_landmark  R_observer  SIMPRE
 global COLIDX DEBLV
 
 %% Simulation values
@@ -22,7 +22,7 @@ LAMBDA_M = chi2inv(0.999, 2);
 
 % Covariance matrices for the noise processes
 Q = diag([1^2 1^2 1^2]);                % Noise in the motion model
-R_observed = diag([0.1^2 0.1^2]);       % Noise in the observations
+R_landmark = diag([0.1^2 0.1^2]);       % Noise in the observations
 R_observer = diag([0.1^2 0.1^2 0.1^2]); % Noise in the observations
 
 %% File information

@@ -34,4 +34,6 @@ robot.P_ita         = zeros(3, 3, nrobots);
 
 robot.type = type;
 
+robot.outliers = 0;
+
 end
