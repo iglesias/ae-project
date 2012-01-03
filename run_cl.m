@@ -17,12 +17,14 @@ global DEBLV
 constants;
 
 % Robot structures (initial covariances and poses)
-robots(1) = init_robot(1, nrobots, 2);
-for r = 2:nrobots
-  robots(r) = init_robot(r, nrobots, 2);
+% TODO parametrize this functions because probably we don't want all the robots
+% starting on the same location
+for i = 1:nrobots
+  robots(i) = init_robot(i, nrobots);
 end
 
 % Miscellaneous
+% sensorpose      = zeros(3, 1);
 total_outliers1 = 0;
 trueposes       = zeros(nrobots, 3);
 encs            = zeros(nrobots, 2);
@@ -163,23 +165,20 @@ while i < niters
   % Localization algorithm for the robots with CL
   for ri = 1:nrobots
     
-     if ri == 1   % the observer
+%     if ri == 1   % the observer
+      if ri == mod(i, 3) + 1   % the observer
       
 %       % TODO Orthogonalize this part from the number of measurements
-       if mod(i, 2) == 0
-         rj = 2;
-       else
-         rj = 3;
-       end
+%       if mod(i, 2) == 0
+%         rj = 2;
+%       else
+%         rj = 3;
+%       end
         
-        if ri == 4   % the observer
-          
-          % TODO Orthogonalize this part from the number of measurements
-          if mod(i, 2) == 0
-            rj = 1;
-          else
-            rj = 3;
-          end
+        rj=mod(i+randi([1 2]), 3) +1;
+
+        l = ri;    % index for the observer
+        m = rj;     % index for the observed
         
         % Generate a measurement
         z = genrobotmeas(trueposes(l, :)', trueposes(m, :)', R_observer);
