@@ -117,8 +117,6 @@ i        = 0;
 sigmas   = zeros(nrobots, niters, 3);
 errposes = zeros(nrobots, niters, 3);
 
-niters = 250;
-
 while i < niters
 
   i = i + 1;
@@ -278,5 +276,7 @@ if 1 % TODO add verbose
   end
   
 end
+
+save('robots-iterative');
 
 end
