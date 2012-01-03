@@ -163,23 +163,17 @@ while i < niters
   % Localization algorithm for the robots with CL
   for ri = 1:nrobots
     
-     if ri == 1   % the observer
+    if ri == 1   % the observer
       
-%       % TODO Orthogonalize this part from the number of measurements
-       if mod(i, 2) == 0
-         rj = 2;
-       else
-         rj = 3;
-       end
+      % TODO Orthogonalize this part from the number of measurements
+      if mod(i, 2) == 0
+        rj = 2;
+      else
+        rj = 3;
+      end
         
-        if ri == 4   % the observer
-          
-          % TODO Orthogonalize this part from the number of measurements
-          if mod(i, 2) == 0
-            rj = 1;
-          else
-            rj = 3;
-          end
+        l = ri;    % index for the observer
+        m = rj;     % index for the observed
         
         % Generate a measurement
         z = genrobotmeas(trueposes(l, :)', trueposes(m, :)', R_observer);
