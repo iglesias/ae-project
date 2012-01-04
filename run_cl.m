@@ -74,7 +74,7 @@ M       = d(:, 2:3)';
 MAP_IDS = d(:, 1)';
 
 % Open the simulation files
-fids    = zeros(1, nrobots);
+fids  = zeros(1, nrobots);
 for i = 1:nrobots
   
   fids(i) = fopen( [dataset_basedir sprintf('%s%d.txt', SIMPRE, i)], 'r' );
@@ -111,6 +111,8 @@ for i = 2:nrobots
   tmp    = length( flines{i} );
   niters = min(niters, tmp);
 end
+
+niters = 300;
 
 % More initializations
 i        = 0;
@@ -157,54 +159,31 @@ while i < niters
                                      R_R, R_L, delta_ts(r), robots(r).mu);
   end
 
-  % Localization algorithm for EKF robots
+  % Localization algorithm
 
-  for ri = 1:nrobots
-    
-    switch robots(r).type
-      
-      case 1
-        z                 = [ ranges{ri}'; bearings{ri}' ];
-        params.known_asso = ids{ri}';
-        robots = cl_localize(robots, ri, Q, R_landmark, z, params);
-        
-      case 2
-        
-        if ri == 2   % the observer
-          
-          % TODO Orthogonalize this part from the number of measurements
-          if mod(i, 2) == 0
-            rj = 1;
-          else
-            rj = 3;
-          end
-        
-          l = ri;     % index for the observer
-          m = rj;     % index for the observed
-        
-          % Generate a measurement
-          z = genrobotmeas(trueposes(l, :)', trueposes(m, :)', R_observer);
+  ri = 2;   % The observer
 
-          if DEBLV
-            fprintf('>>>> Measurement from robot %d to robot %d\n', l, m);
-          end
-
-          params.l = l;
-          params.m = m;
-          robots = cl_localize(robots, ri, Q, R_observer, z, params);
-          
-        else
-          robots = cl_localize(robots, ri, Q);
-        end
-          
-      otherwise
-        disp('Error in the definition of robot type!');
-        return;
-        
-    end
-    
+  % TODO Orthogonalize this part from the observer
+  if mod(i, 2) == 0
+    rj = 1;
+  else
+    rj = 3;
   end
-  
+
+  l = ri;     % index for the observer
+  m = rj;     % index for the observed
+
+  % Generate a measurement
+  z = genrobotmeas(trueposes(l, :)', trueposes(m, :)', R_observer);
+
+  if DEBLV
+    fprintf('>>>> Measurement from robot %d to robot %d\n', l, m);
+  end
+
+  params.l = l;
+  params.m = m;
+  robots = cl_localize(robots, Q, R_observer, z, params);
+
 % %   if mod(i, 50) == 0
 % %     keyboard
 % %   end
@@ -247,7 +226,7 @@ while i < niters
 
 end % while
 
-if 1 % TODO add verbose
+if 0 % TODO add verbose
   
   for r = 1:nrobots
     figure;
@@ -276,7 +255,5 @@ if 1 % TODO add verbose
   end
   
 end
-
-save('robots-iterative');
 
 end

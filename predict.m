@@ -42,9 +42,13 @@ if robot.last_update
       if i < r
         [U, W, ~] = svd( robot.sigma(:, :, r) );
         robot.P_ita(:, :, r) = U*W;  
+        % Alternative way to do this (the elseif must correspond)
+        % robot.P_ita(:, :, r) = robot.sigma(:, :, r);
       elseif i > r
         [~, ~, V] = svd( robot.sigma(:, :, r)' );
         robot.P_ita(:, :, r) = V;
+        % Alternative way to do this (the if must correspond)
+        % robot.P_ita(:, :, r) = eye(3);
       end
       
     end

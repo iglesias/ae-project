@@ -17,7 +17,7 @@ function robots = predict_cross_terms(robots)
 % Useful constants
 nrobots = length(robots);
 
-for ri = 1:nrobots
+for ri = 1:nrobots 
   for rj = 1:nrobots
    
     if ri ~= rj
