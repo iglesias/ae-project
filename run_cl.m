@@ -19,8 +19,6 @@ global E_T  B  R_L  R_R  LAMBDA_M  Q  R_observed  R_observer
 constants;
 
 % Robot structures (initial covariances and poses)
-% TODO parametrize this functions because probably we don't want all the robots
-% starting on the same location
 robot1 = init_robot(1);
 robot2 = init_robot(2);
 
@@ -37,30 +35,22 @@ margin          = 20;
 
 d = load( [dataset_basedir mapfile] );
 
-if 1  % TODO add verbose??
+mapfig = figure(1);   % Here it will be shown the map and the movement
+clf(mapfig);
 
-  mapfig = figure(1);   % Here it will be shown the map and the movement
-  clf(mapfig);
+xmin = min( d(:, 2) ) - margin;
+xmax = max( d(:, 2) ) + margin;
+ymin = min( d(:, 3) ) - margin;
+ymax = max( d(:, 3) ) + margin;
 
-  xmin = min( d(:, 2) ) - margin;
-  xmax = max( d(:, 2) ) + margin;
-  ymin = min( d(:, 3) ) - margin;
-  ymax = max( d(:, 3) ) + margin;
-  
-  figure(mapfig);
-  draw_landmark_map( [dataset_basedir mapfile] );
-  hold on;
-  axis( [xmin xmax ymin ymax] );
-  title('Map and Movement of the Robots');
+figure(mapfig);
+draw_landmark_map( [dataset_basedir mapfile] );
+hold on;
+axis( [xmin xmax ymin ymax] );
+title('Map and Movement of the Robots');
 
-end
-
-% ??
-
-if 1  % TODO add verbose??
-  figure(mapfig); 
-  hcovs = plot(0, 0, 'r', 'erasemode', 'xor');
-end
+figure(mapfig); 
+hcovs = plot(0, 0, 'r', 'erasemode', 'xor');
 
 %% Read Simulation Files
 
@@ -152,17 +142,6 @@ while i < niters
   enc2         = values(5:6);
   denc2        = enc2 - penc2;
   truepose2    = values(7:9);
-  
-  n2 = values(10);
-  if (n2 > 0)
-    bearings2 = values(12:3:12+3*(n2-1));
-    ranges2   = values(13:3:13+3*(n2-1));
-    ids2      = values(11:3:11+3*(n2-1));
-  else
-    bearings2 = [];
-    ranges2   = [];
-    ids2      = [];
-  end
 
   % Compute the control signals of the robots
 
@@ -250,60 +229,46 @@ while i < niters
 
 end % while
 
-if 1 % TODO add verbose
-  
-  robot1_fig = figure;
-  robot2_fig = figure;
-  clf;
+%% Plots of the errors
 
-  figure(robot1_fig);
-  subplot(3, 1, 1);
-  hold on;
-  plot( errposes1(:, 1) );
-  plot( 3*sqrt( sigmas1(:, 1) ) );
-  plot( -3*sqrt( sigmas1(:, 1) ) );
-  title('error on x for the robot 1');
-  
-  figure(robot2_fig);
-  subplot(3, 1, 1);
-  hold on;
-  plot( errposes2(:, 1) );
-  plot( 3*sqrt( sigmas2(:, 1) ) );
-  plot( -3*sqrt( sigmas2(:, 1) ) );
-  title('error on x for the robot 2');
-  
-  figure(robot1_fig);
-  subplot(3, 1, 2);
-  hold on;
-  plot( errposes1(:, 2) );
-  plot( 3*sqrt( sigmas1(:, 2) ) );
-  plot( -3*sqrt( sigmas1(:, 2) ) );
-  title('error on y for the robot 1');
+robot1_fig = figure;
+robot2_fig = figure;
+clf;
 
-  figure(robot2_fig);
-  subplot(3, 1, 2);
-  hold on;
-  plot( errposes2(:, 2) );
-  plot( 3*sqrt( sigmas2(:, 2) ) );
-  plot( -3*sqrt( sigmas2(:, 2) ) );
-  title('error on y for the robot 2');
-  
-  figure(robot1_fig);
-  subplot(3, 1, 3);
-  hold on;
-  plot( errposes1(:, 3) );
-  plot( 3*sqrt( sigmas1(:, 3) ) );
-  plot( -3*sqrt( sigmas1(:, 3) ) );
-  title('error on theta for the robot 1');
+figure(robot1_fig);
+subplot(3, 1, 1);
+hold on;
+plot( errposes1(:, 1) );
+title('error on x for the robot 1');
 
-  figure(robot2_fig);
-  subplot(3, 1, 3);
-  hold on;
-  plot( errposes2(:, 3) );
-  plot( 3*sqrt( sigmas2(:, 3) ) );
-  plot( -3*sqrt( sigmas2(:, 3) ) );
-  title('error on theta for the robot 2');
-  
-end
+figure(robot2_fig);
+subplot(3, 1, 1);
+hold on;
+plot( errposes2(:, 1) );
+title('error on x for the robot 2');
 
+figure(robot1_fig);
+subplot(3, 1, 2);
+hold on;
+plot( errposes1(:, 2) );
+title('error on y for the robot 1');
+
+figure(robot2_fig);
+subplot(3, 1, 2);
+hold on;
+plot( errposes2(:, 2) );
+title('error on y for the robot 2');
+
+figure(robot1_fig);
+subplot(3, 1, 3);
+hold on;
+plot( errposes1(:, 3) );
+title('error on theta for the robot 1');
+
+figure(robot2_fig);
+subplot(3, 1, 3);
+hold on;
+plot( errposes2(:, 3) );
+title('error on theta for the robot 2');
+  
 end
