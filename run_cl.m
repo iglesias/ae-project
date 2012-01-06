@@ -23,9 +23,7 @@ robot1 = init_robot(1);
 robot2 = init_robot(2);
 
 % Miscellaneous
-% sensorpose      = zeros(3, 1);
 total_outliers1 = 0;
-total_outliers2 = 0;
 enc1            = zeros(2, 1);
 enc2            = zeros(2, 1);
 t               = 0;
@@ -101,11 +99,19 @@ fclose(fid1);
 fclose(fid2);
 
 %% Main Loop
+
+% Initialization
 i = 0;
-while i < min( length(flines1), length(flines2) )
+niters     = min( length(flines1), length(flines2) );
+errposes1  = zeros(niters, 3);
+errposes2  = zeros(niters, 3);
+sigmas1    = zeros(niters, 3);
+sigmas2    = zeros(niters, 3);
+
+while i < niters
 
   i = i + 1;
-
+  
   % Read robot1's data
 
   line    = flines1{i};
@@ -126,16 +132,10 @@ while i < min( length(flines1), length(flines2) )
     bearings1 = values(12:3:12+3*(n1-1));
     ranges1   = values(13:3:13+3*(n1-1));
     ids1      = values(11:3:11+3*(n1-1));
-    %x_diff_12       = values(11+3*n1);
-    %y_diff_12       = values(12+3*n1);
-    %theta_diff_12   = values(13+3*n1);
   else
     bearings1 = [];
     ranges1   = [];
     ids1      = [];
-    %x_diff_12       = [];
-    %y_diff_12       = [];
-    %theta_diff_12   = [];
   end
 
   % Read robot2's data
@@ -156,16 +156,10 @@ while i < min( length(flines1), length(flines2) )
     bearings2 = values(12:3:12+3*(n2-1));
     ranges2   = values(13:3:13+3*(n2-1));
     ids2      = values(11:3:11+3*(n2-1));
-    %x_diff_21       = values(11+3*n2);
-    %y_diff_21       = values(12+3*n2);
-    %theta_diff_21   = values(13+3*n2);
   else
     bearings2 = [];
     ranges2   = [];
     ids2      = [];
-    %x_diff_21       = [];
-    %y_diff_21       = [];
-    %theta_diff_21   = [];
   end
 
   % Compute the control signals of the robots
@@ -186,9 +180,6 @@ while i < min( length(flines1), length(flines2) )
   total_outliers1     = total_outliers1 + outliers1;
   
   % Localization algorithm for the second robot, the CL robot
-  % cl_localize(robot2)
-    
-  %z2 = [x_diff_21'; y_diff_21'; theta_diff_21'];
   
   % Recompute the measurement from one robot to the other
   truepose1(3) = wrapToPi( truepose1(3) );
@@ -208,16 +199,23 @@ while i < min( length(flines1), length(flines2) )
     [robot2, robot1] = cl_localize(robot2, Q, robot1, R_observer);
   end
 
-% %   [robot2, robot1] = cl_localize(robot2, Q, robot1, R_observer, z2);
+%   [robot2, robot1] = cl_localize(robot2, Q, robot1, R_observer);
 
+  % Store data for final observations
+  errposes1(i, :) = truepose1 - robot1.mu;
+  errposes1(i, 3) = wrapToPi( errposes1(i, 3) );
+  errposes2(i, :) = truepose2 - robot2.mu;
+  errposes2(i, 3) = wrapToPi( errposes2(i, 3) );
+
+  sigmas1(i, :)   = diag(robot1.sigma);
+  sigmas2(i, :)   = diag(robot2.sigma);
+  
   % Plot the estimates
   if n1 > 0
 
     plot(robot1.mu(1), robot1.mu(2), 'rx');
     plot(robot2.mu(1), robot2.mu(2), 'ro');
     
-    pcov = make_covariance_ellipses(robot1.mu, robot1.sigma);
-    set( hcovs, 'xdata', pcov(1, :), 'ydata', pcov(2,:) );
     pcov = make_covariance_ellipses(robot2.mu, robot2.sigma);
     set( hcovs, 'xdata', pcov(1, :), 'ydata', pcov(2,:) );
     title( sprintf('t = %d, total outliers = %d, current outliers = %d', ...
@@ -251,5 +249,61 @@ while i < min( length(flines1), length(flines2) )
   drawnow
 
 end % while
+
+if 1 % TODO add verbose
+  
+  robot1_fig = figure;
+  robot2_fig = figure;
+  clf;
+
+  figure(robot1_fig);
+  subplot(3, 1, 1);
+  hold on;
+  plot( errposes1(:, 1) );
+  plot( 3*sqrt( sigmas1(:, 1) ) );
+  plot( -3*sqrt( sigmas1(:, 1) ) );
+  title('error on x for the robot 1');
+  
+  figure(robot2_fig);
+  subplot(3, 1, 1);
+  hold on;
+  plot( errposes2(:, 1) );
+  plot( 3*sqrt( sigmas2(:, 1) ) );
+  plot( -3*sqrt( sigmas2(:, 1) ) );
+  title('error on x for the robot 2');
+  
+  figure(robot1_fig);
+  subplot(3, 1, 2);
+  hold on;
+  plot( errposes1(:, 2) );
+  plot( 3*sqrt( sigmas1(:, 2) ) );
+  plot( -3*sqrt( sigmas1(:, 2) ) );
+  title('error on y for the robot 1');
+
+  figure(robot2_fig);
+  subplot(3, 1, 2);
+  hold on;
+  plot( errposes2(:, 2) );
+  plot( 3*sqrt( sigmas2(:, 2) ) );
+  plot( -3*sqrt( sigmas2(:, 2) ) );
+  title('error on y for the robot 2');
+  
+  figure(robot1_fig);
+  subplot(3, 1, 3);
+  hold on;
+  plot( errposes1(:, 3) );
+  plot( 3*sqrt( sigmas1(:, 3) ) );
+  plot( -3*sqrt( sigmas1(:, 3) ) );
+  title('error on theta for the robot 1');
+
+  figure(robot2_fig);
+  subplot(3, 1, 3);
+  hold on;
+  plot( errposes2(:, 3) );
+  plot( 3*sqrt( sigmas2(:, 3) ) );
+  plot( -3*sqrt( sigmas2(:, 3) ) );
+  title('error on theta for the robot 2');
+  
+end
 
 end
