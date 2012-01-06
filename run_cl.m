@@ -4,11 +4,13 @@
 % Localization (CL) algorithm
 %
 % Inputs:
-%           simoutfile1:  simulation file used for the EKF robot
-%           simoutfile2:  simulation file used for the CL robot
-%           mapfile:      file with map information
+%           simoutfile1     simulation file used for the EKF robot
+%           simoutfile2     simulation file used for the CL robot
+%           mapfile         file with map information
+%           mode            1 - continuous communication between robots
+%                           2 - no communication
 %
-function run_cl(simoutfile1, simoutfile2, mapfile)
+function run_cl(simoutfile1, simoutfile2, mapfile, mode)
 
 %% Parameter Initilization
 
@@ -193,14 +195,12 @@ while i < niters
   b = wrapToPi( truepose1(3) - truepose2(3) );
   z2 = [a ; b];
   
-  if mod(i, 1) == 0
+  if mode == 1
     [robot2, robot1] = cl_localize(robot2, Q, robot1, R_observer, z2);
   else
     [robot2, robot1] = cl_localize(robot2, Q, robot1, R_observer);
   end
-
-%   [robot2, robot1] = cl_localize(robot2, Q, robot1, R_observer);
-
+    
   % Store data for final observations
   errposes1(i, :) = truepose1 - robot1.mu;
   errposes1(i, 3) = wrapToPi( errposes1(i, 3) );
