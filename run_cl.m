@@ -1,6 +1,6 @@
 % function run_cl(nrobots, mapfile)
 %
-% This function is the entrance point to the code, it runs the Collective
+% This function is the entry point to the code, it runs the Collective
 % Localization (CL) algorithm
 %
 % Inputs:
@@ -43,30 +43,19 @@ margin          = 15;
 
 d = load( [dataset_basedir mapfile] );
 
-if 1  % TODO add verbose??
+mapfig = figure(1);   % Here it will be shown the map and the movement
+clf(mapfig);
 
-  mapfig = figure(1);   % Here it will be shown the map and the movement
-  clf(mapfig);
+xmin = min( d(:, 2) ) - margin;
+xmax = max( d(:, 2) ) + margin;
+ymin = min( d(:, 3) ) - margin;
+ymax = max( d(:, 3) ) + margin;
 
-  xmin = min( d(:, 2) ) - margin;
-  xmax = max( d(:, 2) ) + margin;
-  ymin = min( d(:, 3) ) - margin;
-  ymax = max( d(:, 3) ) + margin;
-  
-  figure(mapfig);
-  draw_landmark_map( [dataset_basedir mapfile] );
-  hold on;
-  axis( [xmin xmax ymin ymax] );
-  title('Map and Movement of the Robots');
-
-end
-
-% ??
-
-if 1  % TODO add verbose??
-  figure(mapfig); 
-  hcovs = plot(0, 0, 'r', 'erasemode', 'xor');
-end
+figure(mapfig);
+draw_landmark_map( [dataset_basedir mapfile] );
+hold on;
+axis( [xmin xmax ymin ymax] );
+title('Map and Movement of the Robots');
 
 %% Read Simulation Files
 
@@ -199,11 +188,6 @@ while i < niters
       plot(robots(r).mu(1), robots(r).mu(2), [COLIDX(r) '*']);
     end
     
-%     for r = 1:nrobots
-%       pcov = make_covariance_ellipses(robots(r).mu, robots(r).sigma);
-%       set( hcovs, 'xdata', pcov(1, :), 'ydata', pcov(2,:) );
-%     end
-    
   axis( [xmin xmax ymin ymax] ) 
   
   % Plot the true pose
@@ -226,34 +210,26 @@ while i < niters
 
 end % while
 
-if 0 % TODO add verbose
-  
-  for r = 1:nrobots
-    figure;
-    clf;
-    
-    subplot(3, 1, 1);
-    hold on;
-    plot( errposes(r, :, 1) );
-    plot( 3*sqrt( sigmas(r, :, 1) ) );
-    plot( -3*sqrt( sigmas(r, :, 1) ) );
-    title( sprintf('error on x for the robot %d', r) );
-    
-    subplot(3, 1, 2);
-    hold on;
-    plot( errposes(r, :, 2) );
-    plot( 3*sqrt( sigmas(r, :, 2) ) );
-    plot( -3*sqrt( sigmas(r, :, 2) ) );
-    title( sprintf('error on y for the robot %d', r) );
-    
-    subplot(3, 1, 3);
-    hold on;
-    plot( errposes(r, :, 3) );
-    plot( 3*sqrt( sigmas(r, :, 3) ) );
-    plot( -3*sqrt( sigmas(r, :, 3) ) );
-    title( sprintf('error on theta for the robot %d', r) );
-  end
-  
-end
+%% Plots of the errors
 
+for r = 1:nrobots
+  figure;
+  clf;
+
+  subplot(3, 1, 1);
+  hold on;
+  plot( errposes(r, :, 1) );
+  title( sprintf('error on x for the robot %d', r) );
+
+  subplot(3, 1, 2);
+  hold on;
+  plot( errposes(r, :, 2) );
+  title( sprintf('error on y for the robot %d', r) );
+
+  subplot(3, 1, 3);
+  hold on;
+  plot( errposes(r, :, 3) );
+  title( sprintf('error on theta for the robot %d', r) );
+end
+  
 end
