@@ -4,10 +4,12 @@
 % Localization (CL) algorithm
 %
 % Inputs:
-%           nrobots:      number of robots to take part in the simulation
-%           mapfile:      file with map information
+%           nrobots       number of robots to take part in the simulation
+%           mapfile       file with map information
+%           mode          1 - continuous communication between robots
+%                         2 - communication
 %
-function run_cl(nrobots, mapfile)
+function run_cl(nrobots, mapfile, mode)
 
 %% Parameter Initilization
 
@@ -171,11 +173,12 @@ while i < niters
 
   params.l = l;
   params.m = m;
-  robots = cl_localize(robots, Q, R_observer, z, params);
-
-% %   if mod(i, 50) == 0
-% %     keyboard
-% %   end
+  
+  if mode == 1
+    robots = cl_localize(robots, Q, R_observer, z, params);
+  else
+    robots = cl_localize(robots, Q, R_observer, z);
+  end
   
   for r = 1:nrobots
     errposes(r, i, :) = trueposes(r, :)' - robots(r).mu;
