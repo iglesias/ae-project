@@ -46,7 +46,7 @@ if DEBLV
 end
 
 % Update phase
-if nargin > 3
+if nargin > 4
 
   % TODO Discern type of measurement and call the corresponding update
 % %   switch robots(idx).type
@@ -64,8 +64,11 @@ else
   if DEBLV
     fprintf('>>>>>>>> With no measurement\n');
   end
-  robots(:).mu    = robots(:).mu_bar;
-  robots(:).sigma = robots(idx).sigma_bar;
+  
+  for r = 1:nrobots
+    robots(r).mu    = robots(r).mu_bar;
+    robots(r).sigma = robots(r).sigma_bar;
+  end
   
 end
 
