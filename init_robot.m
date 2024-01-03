@@ -11,7 +11,7 @@
 % Robot attributes:
 %           P_ita           each robot needs to track its prediction steps 
 %                           to later predict the cross correlation terms
-%           never_updated   this refers just to CL updates
+%           never_updated   this refers to CL updates
 %
 function robot = init_robot(index, nrobots)
 

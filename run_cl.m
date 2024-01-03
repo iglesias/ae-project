@@ -17,10 +17,10 @@ global DEBLV
 constants;
 
 % Robot structures (initial covariances and poses)
-robots(1) = init_robot(1, nrobots, 2);
-for r = 2:nrobots
-  robots(r) = init_robot(r, nrobots, 2);
+for r = 1:nrobots
+  robots(r) = init_robot(r, nrobots);
 end
+
 
 % Miscellaneous
 total_outliers1 = 0;
@@ -56,10 +56,10 @@ end
 
 % ??
 
-if 1  % TODO add verbose??
-  figure(mapfig); 
-  hcovs = plot(0, 0, 'r', 'erasemode', 'xor');
-end
+%if 1  % TODO add verbose??
+%  figure(mapfig);
+%  hcovs = plot(0, 0, 'r', 'erasemode', 'xor');
+%end
 
 %% Read Simulation Files
 
